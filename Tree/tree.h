@@ -17,10 +17,22 @@ typedef struct threadtree
     int rtag;
 }ThreadTreeNode;
 
+typedef struct threenodetree
+{
+    int val;
+    struct threenodetree* rnext;
+    struct threenodetree* lnext;
+    struct threenodetree* prenext;
+    int ltag;
+    int rtag;
+}ThreadThreeNode;
 
 
 //创建一个作为调试的树
 TreeNode* CreateTestTree(void);
+
+//创建一个作为调试的线索树
+ThreadTreeNode* CreateTestThreadTree(void);
 
 //计算一个值的几次方
 int CalAccumulation(int target, int num);
@@ -71,7 +83,7 @@ void ThreadVisit(ThreadTreeNode* p);
 void CreateInOrderThreadTree(ThreadTreeNode* root);
 
 //中序遍历线索化树的递归写法
-void ThreadinOrder1(ThreadTreeNode* p, ThreadTreeNode* pre1);
+void ThreadInOrder1(ThreadTreeNode* p, ThreadTreeNode* pre1);
 
 //中序遍历线索化树的递归写法主函数
 void CreateInOrderThreadTree1(ThreadTreeNode* root);
@@ -87,3 +99,23 @@ void CreatePostOrderThreadTree(ThreadTreeNode* root);
 
 //后序遍历线索化树的递归写法
 void ThreadpostOrder(ThreadTreeNode* p, ThreadTreeNode* pre1);
+
+//找中序线索树的后继
+ThreadTreeNode* FindInorderNextNode(ThreadTreeNode* p);
+
+//找中序线索树的前驱
+ThreadTreeNode* FindInorderPreNode(ThreadTreeNode* p);
+
+//找前序线索树的后继节点
+ThreadTreeNode* FindPreorderNextNode(ThreadTreeNode* p);
+
+//找前序线索树的前驱节点，因为前序的顺序为根，左，右，所以找前驱的话必须找双亲，不能直接用线索
+//解决方法有：重头开始遍历，使用三叉链表
+ThreadThreeNode* FindPreorderPreNode(ThreadThreeNode* p);
+
+//找后序线索树的后继节点,后序遍历为左，右，根，所以找后继需要找其父节点
+ThreadThreeNode* FindPostorderNextNode(ThreadThreeNode* p);
+
+//找后序线索树的前驱节点
+ThreadTreeNode* FindPostorderPreNode(ThreadTreeNode* p);
+

@@ -2,13 +2,14 @@
 
 int main(void)
 {
-    TreeNode* test1 = CreateTestTree();
-    int count = 0;
-    int* num = Traversal(test1, &count, 1);
-    for(int i = 0; i < count; i ++)
-    {
-        printf("%d\n", num[i]);
-    }
+    ThreadTreeNode* test1 = CreateTestThreadTree();
+    ThreadinOrder(test1);
+    // int count = 0;
+    // int* num = Traversal(test1, &count, 1);
+    // for(int i = 0; i < count; i ++)
+    // {
+    //     printf("%d\n", num[i]);
+    // }
     return 0;
 }
 
@@ -24,6 +25,17 @@ TreeNode* CreateTestTree(void)
     return root;
 }
 
+//创建一个作为调试的线索树
+ThreadTreeNode* CreateTestThreadTree(void)
+{
+    ThreadTreeNode* root = CreateRootThreadTree();
+    root->val = 1;
+    AddThreadLeftNode(root, 2, 1, 2);  //在第二层的第一个位置添加一个数值为2的节点
+    AddThreadRightNode(root, 2, 2, 3);
+    AddThreadLeftNode(root, 3, 1, 4);
+    AddThreadRightNode(root, 3, 2, 5);
+    return root;
+}
 
 //创建一个树的根节点
 TreeNode* CreateRootTree(void)
@@ -114,6 +126,8 @@ ThreadTreeNode* CreateRootThreadTree(void)
     ThreadTreeNode* root = (ThreadTreeNode *)malloc(sizeof(ThreadTreeNode));
     root->rnext = NULL;
     root->lnext = NULL;
+    root->rtag = 0;
+    root->ltag = 0;
     return root;
 }
 
@@ -123,6 +137,8 @@ void AddThreadLeftNode(ThreadTreeNode* p, int layer, int number, int target)
     ThreadTreeNode* Lnode = (ThreadTreeNode *)malloc(sizeof(ThreadTreeNode)); //先将节点创建好
     Lnode->rnext = NULL;
     Lnode->lnext = NULL;
+    Lnode->ltag = 0;
+    Lnode->rtag = 0;
     Lnode->val = target;
 
     ThreadTreeNode* cur = p;
@@ -160,6 +176,8 @@ void AddThreadRightNode(ThreadTreeNode* p, int layer, int number, int target)
     ThreadTreeNode* Lnode = (ThreadTreeNode *)malloc(sizeof(ThreadTreeNode)); //先将节点创建好
     Lnode->rnext = NULL;
     Lnode->lnext = NULL;
+    Lnode->ltag = 0;
+    Lnode->rtag = 0;
     Lnode->val = target;
 
     ThreadTreeNode* cur = p;
@@ -301,7 +319,7 @@ void CreateInOrderThreadTree(ThreadTreeNode* root)
 //中序遍历线索化树的递归写法主函数
 void CreateInOrderThreadTree1(ThreadTreeNode* root)
 {
-    ThreadTreeNode* pre1 = NULL;
+    ThreadTreeNode *pre1 = NULL;
     if (root != NULL)
     {
         ThreadinOrder1(root, pre1);
@@ -311,7 +329,7 @@ void CreateInOrderThreadTree1(ThreadTreeNode* root)
 }
 
 //中序遍历线索化树的递归写法
-void ThreadinOrder1(ThreadTreeNode* p, ThreadTreeNode* pre1)
+void ThreadInOrder1(ThreadTreeNode* p, ThreadTreeNode* pre1)
 {
     if (p != NULL)
     {
@@ -398,4 +416,168 @@ void ThreadpostOrder(ThreadTreeNode* p, ThreadTreeNode* pre1)
         }
         pre1 = p;
     }
+}
+
+//找中序线索树的后继
+ThreadTreeNode* FindInorderNextNode(ThreadTreeNode* p)
+{
+    ThreadTreeNode* cur = p;
+    if (cur->rtag == 1)
+    {
+        return cur->rnext;
+    }
+    else
+    {
+        cur = cur->rnext;
+        while(cur->ltag == 0)  //如果有右孩子，找到右孩子中最左边的节点
+        {
+            cur = cur->lnext;
+        }
+        return cur;
+    }
+    return cur;
+}
+
+//找中序线索树的前驱
+ThreadTreeNode* FindInorderPreNode(ThreadTreeNode* p)
+{
+    ThreadTreeNode* cur = p;
+    if (cur->ltag == 1)
+    {
+        return cur->lnext;     //有线索直接返回
+    }
+    else
+    {
+        cur = cur->lnext;
+        while(cur->rtag == 0)
+        {
+            cur = cur->rnext;
+        }
+        return cur;
+    }
+    return cur;
+}
+
+//找前序线索树的后继节点
+ThreadTreeNode* FindPreorderNextNode(ThreadTreeNode* p)
+{
+    ThreadTreeNode* cur = p;
+    if (cur->rtag == 1)
+    {
+        return cur->rnext;
+    }
+    else
+    {
+        if (cur->ltag == 0)
+        {
+            return cur->lnext;
+        }
+        else
+        {
+            return cur->rnext;
+        }
+    }
+    return cur;
+}
+
+//找前序线索树的前驱节点，因为前序的顺序为根，左，右，所以找前驱的话必须找双亲，不能直接用线索
+//解决方法有：重头开始遍历，使用三叉链表
+ThreadThreeNode* FindPreorderPreNode(ThreadThreeNode* p)
+{
+    ThreadThreeNode* cur = p;
+    if (cur->prenext == NULL)   //为根节点
+    {
+        return NULL;
+    }
+    else
+    {
+        if (cur->prenext->lnext == cur)  //cur为其父节点的左孩子
+        {
+            return cur->prenext;
+        }
+        else                             //cur为其父节点的右孩子
+        {
+            cur = cur->prenext;          //找到其父节点的左孩子的最下一层的节点
+            cur = cur->lnext;
+            while (cur->rtag == 0 || cur->ltag == 0)
+            {
+                if (cur->rtag == 0)
+                {
+                    cur = cur->rnext;
+                    continue;
+                }
+                else
+                {
+                    cur = cur->lnext;
+                    continue;
+                }
+            }
+            return cur;
+        }
+    }
+    return cur;
+}
+
+//找后序线索树的后继节点,后序遍历为左，右，根，所以找后继需要找其父节点
+ThreadThreeNode* FindPostorderNextNode(ThreadThreeNode* p)
+{
+    ThreadThreeNode* cur = p;
+    if (p->rtag == 1)                  //有线索
+    {
+        return cur->rnext;
+    }
+    else                               //无线索
+    {
+        if (cur->prenext->rnext == cur) //cur为右孩子，直接返回父节点
+        {
+            return cur->prenext;
+        }
+        else                            //cur为左孩子，则如果右兄弟为空，前驱为父节点，右兄弟非空，前驱为右兄弟的最下面的节点
+        {
+            cur = cur->prenext;
+            if (cur->rtag == 1)         //右孩子为空，说明p为左孩子，直接返回
+            {
+                return cur;
+            }
+            else
+            {
+                cur = cur->rnext;
+                while (cur->rtag == 0 || cur->ltag == 0) //找到右孩子左子树最下层的节点
+                {
+                    if (cur->ltag == 0)
+                    {
+                        cur = cur->lnext;
+                        continue;
+                    }
+                    else
+                    {
+                        cur = cur->rnext;
+                    }
+                }
+            }
+        }
+    }
+    return cur;
+}
+
+//找后序线索树的前驱节点
+ThreadTreeNode* FindPostorderPreNode(ThreadTreeNode* p)
+{
+    ThreadTreeNode* cur = p;
+    if (cur->ltag == 1)
+    {
+        return cur->lnext;
+    }
+    else
+    {
+        if (cur->rtag == 0)
+        {
+            return cur->rnext;
+        }
+        else
+        {
+            return cur->lnext;
+        }
+    }
+    return cur;
 }
