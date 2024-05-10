@@ -1,12 +1,18 @@
+#ifndef __TREE_H
+#define __TREE_H
+
 #include "stdio.h"
 #include "stdlib.h"
+// #include "stack_tree.h"
 
 typedef struct tree
 {
     int val;
     struct tree *lnext;
     struct tree *rnext;
+    //SqStack* next;
 }TreeNode;
+
 
 typedef struct threadtree
 {
@@ -76,6 +82,9 @@ int* Traversal(TreeNode* root, int* returnSize, int way);
 
 //树的前序遍历
 void preOrder(TreeNode* root, int* ret, int* returnSize);
+
+//树的迭代前序遍历
+void preOrder1(TreeNode* root, int* ret, int* returnSize);
 
 //前序遍历线索化树
 void CreatePreOrderThreadTree(ThreadTreeNode* root);
@@ -170,3 +179,5 @@ void visit(ThreadTreeNode* p);
 
 //计算一个值的几次方
 int CalAccumulation(int target, int num);
+
+#endif

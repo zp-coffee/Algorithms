@@ -1,12 +1,5 @@
 #include "tree.h"
-#include "stack.h"
-
-int main(void)
-{
-    ThreadTreeNode* test1 = CreateTestThreadTree();
-    CreatePostOrderThreadTree(test1);
-    return 0;
-}
+#include "stack_tree.h"
 
 //*******普通二叉树***********************************************************
 
@@ -117,6 +110,27 @@ void preOrder(TreeNode* root, int* ret, int* returnSize)
     ret[(*returnSize)++] = root->val;
     preOrder(root->lnext, ret, returnSize);
     preOrder(root->rnext, ret, returnSize);
+}
+
+// //树的迭代前序遍历
+void preOrder1(TreeNode* root, int* ret, int* returnSize)
+{
+
+    SqStack* S = CreateSqStack();
+    if (root == NULL)
+    {
+        return;
+    }
+    TreeNode* cur = root;
+    while (cur || !SqStackEmpty(S))
+    {
+        if (cur)
+        {
+            ret[(*returnSize)++] = cur->val;
+            PushSqStack(S, cur);
+        }
+    }
+
 }
 
 //*******中序***********************************************************
