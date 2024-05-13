@@ -3,9 +3,9 @@
 int main(void)
 {
     TreeNode* test = CreateTestTree();
+    int num[20];
     int num_size = 0;
-    int num[MaxSize];
-    postOrder1(test, num, &num_size);
+    LevelOrder(test, num, &num_size);
     for (int i = 0; i < num_size; i ++)
     {
         printf("%d\n", num[i]);
@@ -24,6 +24,8 @@ TreeNode* CreateTestTree(void)
     AddRightNode(root, 2, 2, 3);
     AddLeftNode(root, 3, 1, 4);
     AddRightNode(root, 3, 2, 5);
+    AddLeftNode(root, 3, 3, 6);
+    AddRightNode(root, 3, 4, 7);
     return root;
 }
 
@@ -218,6 +220,38 @@ void postOrder1(TreeNode* root, int* ret, int* returnSize)
     }
 }
 
+//树的非递归遍历2
+void postOrder2(TreeNode* root, int* ret, int* returnSize)
+{
+    SqStack* S = CreateSqStack();
+    TreeNode* cur = root;
+    TreeNode* pre = NULL;
+    while (cur != NULL || !SqStackEmpty(S))
+    {
+        if (cur != NULL)
+        {
+            PushSqStack(S, cur);
+            cur = cur->lnext;
+        }
+        else
+        {
+            cur = ReadSqStack(S);
+            if (cur->rnext && cur->rnext != pre)
+            {
+                cur = cur->rnext;
+            }
+            else
+            {
+                cur = PopSqStack(S);
+                ret[(*returnSize) ++] = cur->val;
+                pre = cur;
+                cur = NULL;
+            }
+        }
+    }
+}
+
+
 //树的遍历，结果存于数组ret中并返回,way:1->前序，2->中序，3->后序
 int* Traversal(TreeNode* root, int* returnSize, int way) 
 {
@@ -238,7 +272,30 @@ int* Traversal(TreeNode* root, int* returnSize, int way)
     return ret;
 }
 
-//*******栈***********************************************************
+//********层序遍历***********************
+
+//从上往下，从左往右的层序遍历
+void LevelOrder(TreeNode* root, int* ret, int* returnSize)
+{
+    SqQueue* Q = CreateSqQueue();
+    TreeNode* cur = root;
+    int size = 0;
+    PushSqQueue(Q, cur);
+    while(!EmptySqQueue(Q))
+    {
+        size = Q->rear - Q->front;
+        for (int i = 0; i < size; i ++)
+        {
+            cur = PopSqQueue(Q);
+            ret[(*returnSize)++] = cur->val;
+            if (cur->lnext) PushSqQueue(Q, cur->lnext);
+            if (cur->rnext) PushSqQueue(Q, cur->rnext);
+        }
+    }
+}
+
+
+//*******栈*****************************
 
 //********顺序栈的基本操作**************
 
@@ -347,6 +404,100 @@ variable_type PopLinkStack(LinkStack* l)
 variable_type ReadLinkStack(LinkStack* l)
 {
     return l->next->val;
+}
+
+//*******队列***********************************************************
+
+//*******顺序存储队列***********************************************************
+
+//创建一个循环队列，避免假溢出
+SqQueue* CreateSqQueue(void)
+{
+    SqQueue* Q = (SqQueue*)malloc(sizeof(SqQueue));
+    Q->front = 0;
+    Q->rear = 0;
+    return Q;
+}
+
+//判断队列是否为空
+int EmptySqQueue(SqQueue* Q)
+{
+    if (Q->front == Q->rear)
+    {
+        printf("the queue is empty\n");
+        return 1;
+    }
+    else
+    return 0;
+}
+
+//入队
+void PushSqQueue(SqQueue* Q, variable_type val)
+{
+    if ((Q->rear+1) % MaxSize == Q->front)  //队列满了，采取牺牲一个存储单元来实现判断队列满
+    {
+        printf("the queue is full\n");
+        return;
+    }
+    Q->data[Q->rear] = val;
+    Q->rear = (Q->rear + 1) % MaxSize;
+}
+
+//出队
+variable_type PopSqQueue(SqQueue* Q)
+{
+    if (Q->rear == Q->front)
+    {
+        printf("the queue is empty\n");
+        return NULL;
+    }
+    variable_type temp = Q->data[Q->front];
+    Q->front = (Q->front + 1) % MaxSize;
+    return temp;
+}
+
+//*******链式存储队列***********************************************************
+
+//创建一个链式存储队列
+LinkQueue* CreateLinkQueue(void)
+{
+    LinkQueue* Q = (LinkQueue*)malloc(sizeof(LinkQueue));
+    Q->front->next = NULL;
+    Q->rear = Q->front;
+    return Q;
+}
+
+//判断队列是否为空
+int EmptyLinkQueue(LinkQueue* Q)
+{
+    if (Q->front == Q->rear)
+    {
+        printf("the linkqueue is empty\n");
+        return 1;
+    }
+    return 0;
+}
+
+//入队
+void PushLinkQueue(LinkQueue* Q, variable_type target)
+{
+    Q->rear->next->val = target;  //插入链尾
+    Q->rear = Q->rear->next;
+}
+
+//出队
+variable_type PopLinkQueue(LinkQueue* Q)
+{
+    if (Q->front == Q->rear)
+    {
+        printf("the queue is empty\n");
+        return NULL;
+    }
+    LinkNode* temp = Q->front->next;       //有头节点
+    Q->front->next = Q->front->next->next;
+    variable_type val = temp->val;
+    free(temp);
+    return val;
 }
 
 //*******线索二叉树***********************************************************

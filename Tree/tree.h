@@ -4,6 +4,10 @@
 #include "stdio.h"
 #include "stdlib.h"
 
+#define variable_type TreeNode*
+#define MaxSize 50
+
+//************************树************************
 typedef struct tree
 {
     int val;
@@ -30,8 +34,7 @@ typedef struct threenodetree
     int rtag;
 }ThreadThreeNode;
 
-#define variable_type TreeNode*
-#define MaxSize 50
+//************************栈************************
 
 typedef struct stack
 {
@@ -44,6 +47,24 @@ typedef struct linkstack
     variable_type val;
     struct linkstack* next;
 }LinkStack;  //栈的链式存储
+
+//************************队列************************
+typedef struct {
+    variable_type data[MaxSize];
+    int front, rear;
+}SqQueue;
+
+typedef struct LinkNode{
+    variable_type val;
+    struct LinkNode* next;
+}LinkNode;
+
+typedef struct {
+    LinkNode* front;
+    LinkNode* rear;
+}LinkQueue;
+
+//************************函数************************
 
 //创建一个作为调试的树
 TreeNode* CreateTestTree(void);
@@ -175,6 +196,9 @@ void postOrder(TreeNode* root, int* ret, int* returnSize);
 //树的迭代后序遍历
 void postOrder1(TreeNode* root, int* ret, int* returnSize);
 
+//树的非递归遍历2
+void postOrder2(TreeNode* root, int* ret, int* returnSize);
+
 //后序遍历线索化树
 void CreatePostOrderThreadTree(ThreadTreeNode* root);
 
@@ -186,6 +210,11 @@ ThreadThreeNode* FindPostorderNextNode(ThreadThreeNode* p);
 
 //找后序线索树的前驱节点
 ThreadTreeNode* FindPostorderPreNode(ThreadTreeNode* p);
+
+//******层序**************************************************************
+
+//从上往下，从左往右的层序遍历
+void LevelOrder(TreeNode* root, int* ret, int* returnSize);
 
 //*******共同操作***********************************************************
 
@@ -235,5 +264,32 @@ variable_type ReadLinkStack(LinkStack* l);
 //判断栈是否为空
 int LinkStackEmpty(LinkStack* l);
 
+//********顺序队列的基本操作******************
+
+//创建一个顺序队列
+SqQueue* CreateSqQueue(void);
+
+//判断队列是否为空
+int EmptySqQueue(SqQueue* Q);
+
+//入队
+void PushSqQueue(SqQueue* Q, variable_type val);
+
+//出队
+variable_type PopSqQueue(SqQueue* Q);
+
+//********链式队列的基本操作******************
+
+//创建一个链式存储队列
+LinkQueue* CreateLinkQueue(void);
+
+//判断队列是否为空
+int EmptyLinkQueue(LinkQueue* Q);
+
+//入队
+void PushLinkQueue(LinkQueue* Q, variable_type target);
+
+//出队
+variable_type PopLinkQueue(LinkQueue* Q);
 
 #endif
