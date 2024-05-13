@@ -11,6 +11,15 @@ int main(void)
 
 //********顺序栈的基本操作**************
 
+//创建一个栈
+SqStack* CreateSqStack(void)
+{
+    SqStack* S = (SqStack* )malloc(sizeof(SqStack));
+    S->top = -1;
+    return S;
+}
+
+
 //初始化栈
 void InitSqStack(SqStack* S)
 {
@@ -29,7 +38,7 @@ int SqStackEmpty(SqStack* S)
 }
 
 //进栈
-int PushSqStack(SqStack* S, int x)
+int PushSqStack(SqStack* S, variable_type x)
 {
     if (S->top == MaxSize)
     {
@@ -41,20 +50,20 @@ int PushSqStack(SqStack* S, int x)
 }
 
 //出栈
-int PopSqStack(SqStack* S)
+variable_type PopSqStack(SqStack* S)
 {
     if (S->top == -1)
     {
         printf("the stack is empty");
         return 0;
     }
-    int x = S->data[S->top];
+    variable_type x = S->data[S->top];
     S->top --;
     return x;
 }
 
 //读栈顶元素
-int ReadSqStack(SqStack* S)
+variable_type ReadSqStack(SqStack* S)
 {
     if (S->top == -1)
     {
@@ -67,7 +76,7 @@ int ReadSqStack(SqStack* S)
 //********链式栈的基本操作**************
 
 //创建一个节点
-LinkStack* CreateLinkStack(int num)
+LinkStack* CreateLinkStack(variable_type num)
 {
     LinkStack* cur = (LinkStack* )malloc(sizeof(LinkStack));
     cur->val = num;
@@ -87,7 +96,7 @@ int LinkStackEmpty(LinkStack* l)
 }
 
 //入栈
-void PushLinkStack(LinkStack* l, int num)
+void PushLinkStack(LinkStack* l, variable_type num)
 {
     LinkStack* p = CreateLinkStack(num);
     p->next = l->next;
@@ -95,17 +104,17 @@ void PushLinkStack(LinkStack* l, int num)
 }
 
 //出栈
-int PopLinkStack(LinkStack* l)
+variable_type PopLinkStack(LinkStack* l)
 {
     LinkStack* cur = l->next;
     l->next = l->next->next;
-    int x = cur->val;
+    variable_type x = cur->val;
     free(cur);
     return x;
 }
 
 //读栈顶元素
-int ReadLinkStack(LinkStack* l)
+variable_type ReadLinkStack(LinkStack* l)
 {
     return l->next->val;
 }

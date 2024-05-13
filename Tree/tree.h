@@ -3,16 +3,13 @@
 
 #include "stdio.h"
 #include "stdlib.h"
-// #include "stack_tree.h"
 
 typedef struct tree
 {
     int val;
     struct tree *lnext;
     struct tree *rnext;
-    //SqStack* next;
 }TreeNode;
-
 
 typedef struct threadtree
 {
@@ -32,6 +29,21 @@ typedef struct threenodetree
     int ltag;
     int rtag;
 }ThreadThreeNode;
+
+#define variable_type TreeNode*
+#define MaxSize 50
+
+typedef struct stack
+{
+    variable_type data[MaxSize];
+    int top;
+}SqStack;   //栈的顺序存储
+
+typedef struct linkstack
+{
+    variable_type val;
+    struct linkstack* next;
+}LinkStack;  //栈的链式存储
 
 //创建一个作为调试的树
 TreeNode* CreateTestTree(void);
@@ -122,6 +134,9 @@ void PreorderConverse(ThreadThreeNode* root);
 //树的中序遍历
 void inOrder(TreeNode* root, int* ret, int* returnSize);
 
+//树的迭代中序遍历
+void inOrder1(TreeNode* root, int* ret, int* num_size);
+
 //中序遍历线索化树
 void ThreadInOrder(ThreadTreeNode* root);
 
@@ -157,6 +172,9 @@ void Inorder(ThreadTreeNode* root);
 //树的后序遍历
 void postOrder(TreeNode* root, int* ret, int* returnSize);
 
+//树的迭代后序遍历
+void postOrder1(TreeNode* root, int* ret, int* returnSize);
+
 //后序遍历线索化树
 void CreatePostOrderThreadTree(ThreadTreeNode* root);
 
@@ -179,5 +197,43 @@ void visit(ThreadTreeNode* p);
 
 //计算一个值的几次方
 int CalAccumulation(int target, int num);
+
+//********顺序栈的基本操作******************
+
+//初始化栈
+void InitSqStack(SqStack* S);
+
+//创建一个栈
+SqStack* CreateSqStack(void);
+
+//判断栈是否为空
+int SqStackEmpty(SqStack* S);
+
+//进栈
+void PushSqStack(SqStack* S, variable_type x);
+
+//出栈
+variable_type PopSqStack(SqStack* S);
+
+//读栈顶元素
+variable_type ReadSqStack(SqStack* S);
+
+//********链式栈的基本操作**************
+
+//创建一个节点
+LinkStack* CreateLinkStack(variable_type num);
+
+//入栈
+void PushLinkStack(LinkStack* l, variable_type num);
+
+//出栈
+variable_type PopLinkStack(LinkStack* l);
+
+//读栈顶元素
+variable_type ReadLinkStack(LinkStack* l);
+
+//判断栈是否为空
+int LinkStackEmpty(LinkStack* l);
+
 
 #endif
