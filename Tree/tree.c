@@ -3,13 +3,7 @@
 int main(void)
 {
     TreeNode* test = CreateTestTree();
-    int num[20];
-    int num_size = 0;
-    LevelOrder(test, num, &num_size);
-    for (int i = 0; i < num_size; i ++)
-    {
-        printf("%d\n", num[i]);
-    }
+    printf("%d\n", TwoNodeNumsRecur(test));
     return 0;
 }
 
@@ -284,6 +278,7 @@ void LevelOrder(TreeNode* root, int* ret, int* returnSize)
     while(!EmptySqQueue(Q))
     {
         size = Q->rear - Q->front;
+        //depth ++;                                 求深度只需要在这里添加一行
         for (int i = 0; i < size; i ++)
         {
             cur = PopSqQueue(Q);
@@ -294,8 +289,82 @@ void LevelOrder(TreeNode* root, int* ret, int* returnSize)
     }
 }
 
+//******题目**************************************************************
 
-//*******栈*****************************
+//判断二叉树是否为完全二叉树
+int CheckFullyTree(TreeNode* root)
+{
+    if (root == NULL)
+    {
+        return 1;
+    }
+    TreeNode* cur = root;
+    SqQueue* Q = CreateSqQueue();
+    PushSqQueue(Q, cur);
+    while (!EmptySqQueue(Q))
+    {
+        cur = PopSqQueue(Q);
+        if (cur)
+        {
+            PushSqQueue(Q, cur->lnext);
+            PushSqQueue(Q, cur->rnext);
+        }
+        else
+        {
+            while(!EmptySqQueue(Q))
+            {
+                cur = PopSqQueue(Q);
+                if (cur)
+                {
+                    return 0;
+                }
+            }
+        }
+    }
+    return 1;
+}
+
+//一颗二叉树上有多少个度为二的节点
+int TwoNodeNums(TreeNode* root)
+{
+    SqQueue* Q = CreateSqQueue();
+    TreeNode* cur = root;
+    int size = 0;
+    int num = 0;
+    PushSqQueue(Q, cur);
+    while(!EmptySqQueue(Q))
+    {
+        size = Q->rear - Q->front;
+        //depth ++;                                 求深度只需要在这里添加一行
+        for (int i = 0; i < size; i ++)
+        {
+            cur = PopSqQueue(Q);
+            if (cur->lnext && cur->rnext) num ++;
+            if (cur->lnext) PushSqQueue(Q, cur->lnext);
+            if (cur->rnext) PushSqQueue(Q, cur->rnext);
+        }
+    }
+    return num;
+}
+
+//一颗二叉树上有多少个度为二的节点,递归算法
+int TwoNodeNumsRecur(TreeNode* root)
+{
+    if (root == NULL)
+    {
+        return 0;
+    }
+    else if (root->lnext && root->rnext)
+    {
+        return TwoNodeNumsRecur(root->lnext) + TwoNodeNumsRecur(root->rnext) + 1;
+    }
+    else
+    {
+        return TwoNodeNumsRecur(root->lnext) + TwoNodeNumsRecur(root->rnext);
+    }
+}
+
+//********栈**************************
 
 //********顺序栈的基本操作**************
 

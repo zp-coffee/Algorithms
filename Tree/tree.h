@@ -216,6 +216,18 @@ ThreadTreeNode* FindPostorderPreNode(ThreadTreeNode* p);
 //从上往下，从左往右的层序遍历
 void LevelOrder(TreeNode* root, int* ret, int* returnSize);
 
+
+//******题目**************************************************************
+
+//判断二叉树是否为完全二叉树
+int CheckFullyTree(TreeNode* root);
+
+//一颗二叉树上有多少个度为二的节点
+int TwoNodeNums(TreeNode* root);
+
+//一颗二叉树上有多少个度为二的节点,递归算法
+int TwoNodeNumsRecur(TreeNode* root);
+
 //*******共同操作***********************************************************
 
 //在访问该节点时修改左指针和右指针为前继节点和后继节点
