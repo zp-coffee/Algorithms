@@ -119,6 +119,9 @@ void preOrder(TreeNode* root, int* ret, int* returnSize);
 //树的迭代前序遍历
 void preOrder1(TreeNode* root, int* ret, int* returnSize);
 
+//前序打印二叉树
+void PrintfPreTree(TreeNode* root);
+
 //前序遍历线索化树
 void CreatePreOrderThreadTree(ThreadTreeNode* root);
 
@@ -228,6 +231,27 @@ int TwoNodeNums(TreeNode* root);
 //一颗二叉树上有多少个度为二的节点,递归算法
 int TwoNodeNumsRecur(TreeNode* root);
 
+//翻转二叉树，递归法
+TreeNode* InvertTree(TreeNode* root);
+
+//翻转二叉树，迭代法，前序遍历
+TreeNode* InvertTree2(TreeNode* root);
+
+//前序遍历返回第几个节点的值
+int FindTreeNode(TreeNode* root, int num);
+
+//删除以root为根的子树
+void DeleteTree(TreeNode* root);
+
+//删除指定值的节点
+TreeNode* DeleteNode(TreeNode* root, int target);
+
+//求树的深度
+int DepthTree(TreeNode* root);
+
+//找最近的公共祖先
+TreeNode* FindLowestCommonAnestor(TreeNode* root, TreeNode* p, TreeNode* q);
+
 //*******共同操作***********************************************************
 
 //在访问该节点时修改左指针和右指针为前继节点和后继节点
@@ -238,6 +262,9 @@ void visit(ThreadTreeNode* p);
 
 //计算一个值的几次方
 int CalAccumulation(int target, int num);
+
+//求两个值之间的较大值
+int max(int x, int y);
 
 //********顺序栈的基本操作******************
 

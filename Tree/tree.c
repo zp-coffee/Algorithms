@@ -3,7 +3,16 @@
 int main(void)
 {
     TreeNode* test = CreateTestTree();
-    printf("%d\n", TwoNodeNumsRecur(test));
+    TreeNode* test1 = test->rnext;
+    TreeNode* test2 = test->lnext;
+    // TreeNode* test1 = CreateRootTree();
+    // test1->val = 2;
+    // TreeNode* test2 = CreateRootTree();
+    // test2->val = 3;
+    //test = DeleteNode(test, 2);
+    //PrintfPreTree(test);
+    test = FindLowestCommonAnestor(test, test1, test2);
+    printf("%d\n", test->val);
     return 0;
 }
 
@@ -16,10 +25,11 @@ TreeNode* CreateTestTree(void)
     root->val = 1;
     AddLeftNode(root, 2, 1, 2);
     AddRightNode(root, 2, 2, 3);
-    AddLeftNode(root, 3, 1, 4);
-    AddRightNode(root, 3, 2, 5);
-    AddLeftNode(root, 3, 3, 6);
-    AddRightNode(root, 3, 4, 7);
+    // AddLeftNode(root, 3, 1, 4);
+    // AddRightNode(root, 3, 2, 5);
+    // AddLeftNode(root, 3, 3, 6);
+    // AddRightNode(root, 3, 4, 7);
+    // AddRightNode(root, 4, 1, 8);
     return root;
 }
 
@@ -120,6 +130,18 @@ void preOrder(TreeNode* root, int* ret, int* returnSize)
     preOrder(root->rnext, ret, returnSize);
 }
 
+//前序打印二叉树
+void PrintfPreTree(TreeNode* root)
+{
+    if(root == NULL)
+    {
+        return;
+    }
+    printf("%d\n", root->val);
+    PrintfPreTree(root->lnext);
+    PrintfPreTree(root->rnext);
+}
+
 //树的迭代前序遍历
 void preOrder1(TreeNode* root, int* ret, int* returnSize)
 {
@@ -205,7 +227,7 @@ void postOrder1(TreeNode* root, int* ret, int* returnSize)
         ret[(*returnSize)++] = node->val;
         if (node->lnext) PushSqStack(S, node->lnext);
         if (node->rnext) PushSqStack(S, node->rnext);
-    }
+    }//出栈顺序为根，右，左， 后序遍历为左，右，根，所以最后再倒置
     for (int i = 0, j = *returnSize-1; i <= j; i ++, j --)
     {
         temp = ret[i];
@@ -362,6 +384,148 @@ int TwoNodeNumsRecur(TreeNode* root)
     {
         return TwoNodeNumsRecur(root->lnext) + TwoNodeNumsRecur(root->rnext);
     }
+}
+
+
+//翻转二叉树，递归法，前序遍历
+TreeNode* InvertTree(TreeNode* root)
+{
+    if (root == NULL)
+    {
+        return NULL;
+    }
+    TreeNode* temp = (TreeNode*)malloc(sizeof(TreeNode));
+    temp = root->lnext;
+    root->lnext = root->rnext;
+    root->rnext = temp;
+    InvertTree(root->lnext);
+    InvertTree(root->rnext);
+    return root;
+}
+
+//翻转二叉树，迭代法，前序遍历
+TreeNode* InvertTree2(TreeNode* root)
+{
+    SqStack* S = CreateSqStack();
+    if (root == NULL)
+    {
+        return NULL;
+    }
+    PushSqStack(S, root);
+    while(!SqStackEmpty(S))
+    {
+        TreeNode* cur = PopSqStack(S);
+        TreeNode* temp = (TreeNode*)malloc(sizeof(TreeNode));
+        temp = cur->lnext;
+        cur->lnext = cur->rnext;
+        cur->rnext = temp;
+        if (cur->rnext) PushSqStack(S, cur->rnext);
+        if (cur->lnext) PushSqStack(S, cur->lnext);
+    }
+    return root;
+}
+
+int count = 1;
+//前序遍历返回第几个节点的值
+int FindTreeNode(TreeNode* root, int num)
+{
+    int temp;
+    if (root == NULL) return -1;
+    if (count == num) return root->val;
+    count ++;
+    temp = FindTreeNode(root->lnext, num);
+    if (temp == -1) //说明不再左子树中
+    {
+        return FindTreeNode(root->rnext, num);
+    }
+    return temp;
+}
+
+//删除以root为根的子树
+void DeleteTree(TreeNode* root)
+{
+    if (root->rnext) DeleteTree(root->rnext);
+    if (root->lnext) DeleteTree(root->lnext);
+    free(root);
+}
+
+//删除指定值的节点,前序遍历，不能只用free，得使该父节点指向null，释放空间得释放该节点的所有子节点的空间，free只释放一个节点的空间
+TreeNode* DeleteNode(TreeNode* root, int target)
+{
+    if (root == NULL || root->val == target)
+    {
+        DeleteTree(root);
+        return root;
+    }
+    if (root->lnext->val == target)
+    {
+        DeleteTree(root->lnext);
+        root->lnext = NULL;
+        return root;
+    }
+    if (root->rnext->val == target)
+    {
+        DeleteTree(root->rnext);
+        root->rnext = NULL;
+        return root;
+    }
+    if (root->lnext) DeleteNode(root->lnext, target);
+    if (root->rnext) DeleteNode(root->rnext, target);
+    return root;
+}
+
+//求树的深度
+int DepthTree(TreeNode* root)
+{
+    if (root == NULL)
+    {
+        return 0;
+    }
+    int leftdepth = DepthTree(root->lnext);
+    int rightdepth = DepthTree(root->rnext);
+    int depth = 1 + max(leftdepth, rightdepth);
+    return depth;
+}
+
+// //找到值为x的所有祖先
+// void FindAllAncestor(TreeNode* root, int target)
+// {
+//     if (root == NULL)
+//     {
+//         return ;
+//     }
+//     SqStack* S = CreateSqStack();
+//     while(root != NULL || S->top >= 0)
+//     {
+//         while(root != NULL && root->val != target)
+//         {
+//             PushSqStack(S, root);
+//         }
+//     }
+// }
+
+//找最近的公共祖先,必须是同一棵树上的节点，不同树上的节点值相同不能用
+TreeNode* FindLowestCommonAnestor(TreeNode* root, TreeNode* p, TreeNode* q)
+{
+    if (root == q || root == p || root == NULL)   //返回条件：找到了目标节点或者遍历到了根节点
+    {
+        return root;
+    }
+    TreeNode* left = FindLowestCommonAnestor(root->lnext, p, q);     //除了q和p会返回值之外，其他所有的都返回NULL
+    TreeNode* right = FindLowestCommonAnestor(root->rnext, p, q);
+    if (left != NULL && right != NULL)   //该节点的左右子树都有目标节点，有且只有一个最近的公共祖先满足这个条件
+    {
+        return root;
+    }
+    if (left == NULL && right != NULL)   //左子树没有，在右子树
+    {
+        return right;
+    }
+    else if (left != NULL && right == NULL) //右子树没有，在左子树
+    {
+        return left;
+    }//left==null, right==null
+    return NULL;            //左子树和右子树都没有
 }
 
 //********栈**************************
@@ -1235,3 +1399,8 @@ void visit(ThreadTreeNode* p)
     printf("%d\n",p->val);
 }
 
+//求两个值之间的较大值
+int max(int x, int y)
+{
+    return x>y ? x : y;
+}
