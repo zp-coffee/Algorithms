@@ -3,16 +3,17 @@
 int main(void)
 {
     TreeNode* test = CreateTestTree();
-    TreeNode* test1 = test->rnext;
-    TreeNode* test2 = test->lnext;
-    // TreeNode* test1 = CreateRootTree();
-    // test1->val = 2;
-    // TreeNode* test2 = CreateRootTree();
-    // test2->val = 3;
-    //test = DeleteNode(test, 2);
-    //PrintfPreTree(test);
-    test = FindLowestCommonAnestor(test, test1, test2);
-    printf("%d\n", test->val);
+    int size = 0;
+    int** temp = (int**)malloc(sizeof(int*) * MaxSize);
+    temp = FindAllPaths(test, &size);
+    for (int i = 0; i < size; i ++)
+    {
+        for (int j = 0; temp[i][j] != 0; j ++)
+        {
+            printf("%d ",temp[i][j]);
+        }
+        printf("\n");
+    }
     return 0;
 }
 
@@ -25,11 +26,11 @@ TreeNode* CreateTestTree(void)
     root->val = 1;
     AddLeftNode(root, 2, 1, 2);
     AddRightNode(root, 2, 2, 3);
-    // AddLeftNode(root, 3, 1, 4);
-    // AddRightNode(root, 3, 2, 5);
-    // AddLeftNode(root, 3, 3, 6);
-    // AddRightNode(root, 3, 4, 7);
-    // AddRightNode(root, 4, 1, 8);
+    AddLeftNode(root, 3, 1, 4);
+    AddRightNode(root, 3, 2, 5);
+    AddLeftNode(root, 3, 3, 6);
+    AddRightNode(root, 3, 4, 7);
+    AddLeftNode(root, 4, 1, 8);
     return root;
 }
 
@@ -304,7 +305,7 @@ void LevelOrder(TreeNode* root, int* ret, int* returnSize)
         for (int i = 0; i < size; i ++)
         {
             cur = PopSqQueue(Q);
-            ret[(*returnSize)++] = cur->val;
+            ret[(*returnSize)++] = cur->val;            //遍历的处理逻辑
             if (cur->lnext) PushSqQueue(Q, cur->lnext);
             if (cur->rnext) PushSqQueue(Q, cur->rnext);
         }
@@ -474,18 +475,89 @@ TreeNode* DeleteNode(TreeNode* root, int target)
     return root;
 }
 
-//求树的深度
-int DepthTree(TreeNode* root)
+//求树的最大深度
+int MaxDepthTree(TreeNode* root)
 {
-    if (root == NULL)
+    if (root == NULL)     //递归返回条件，递归到空节点为止
     {
         return 0;
     }
-    int leftdepth = DepthTree(root->lnext);
-    int rightdepth = DepthTree(root->rnext);
-    int depth = 1 + max(leftdepth, rightdepth);
+    int leftdepth = MaxDepthTree(root->lnext);
+    int rightdepth = MaxDepthTree(root->rnext);
+    int depth = 1 + max(leftdepth, rightdepth);   //最终的深度取决于前面两个函数递归了多少次
     return depth;
 }
+
+//求树的最小深度,指的是从深度最小的叶子节点开始到根节点的路径,使用后序遍历
+int MinDepthTree(TreeNode* root)
+{
+    if (root == NULL) return 0;   //递归结束条件，递归到空节点为止
+    int leftdepth = MinDepthTree(root->lnext);
+    int rightdepth = MinDepthTree(root->rnext);
+    if (root->rnext == NULL && root->lnext != NULL)  //右节点为空，但是左节点非空，不是最小深度，返回左节点的深度
+    {
+        return leftdepth + 1;
+    } 
+    if (root->rnext != NULL && root->lnext == NULL)  //左节点为空，但是右节点非空，不是最小深度，返回右节点的深度
+    {
+        return rightdepth + 1;
+    }
+    int depth = 1 + min(rightdepth, leftdepth);
+    return depth;
+}
+
+// //求出树的所有路径
+// void construct_paths(TreeNode* root, char** paths, int* returnSize, int* sta, int top) 
+// {
+//     if (root != NULL) {
+//         if (root->lnext == NULL && root->rnext == NULL) {  // 当前节点是叶子节点
+//             char* tmp = (char*)malloc(1001);
+//             int len = 0;
+//             for (int i = 0; i < top; i++) {
+//                 len += sprintf(tmp + len, "%d->", sta[i]);
+//             }
+//             sprintf(tmp + len, "%d", root->val);
+//             paths[(*returnSize)++] = tmp;  // 把路径加入到答案中
+//         } else {
+//             sta[top++] = root->val;  // 当前节点不是叶子节点，继续递归遍历
+//             construct_paths(root->lnext, paths, returnSize, sta, top);
+//             construct_paths(root->rnext, paths, returnSize, sta, top); //递归的同时完成了回溯
+//         }
+//     }
+// }
+
+//找到所有叶子节点的路径主函数
+int** FindAllPaths(TreeNode* root, int* returnSize)
+{
+    int** result_path = (int**)malloc(sizeof(int*) * MaxSize);  //存放结果
+    *returnSize = 0; //记录路径数
+    int* cur;   //暂存一条路径
+    construct_paths(root, result_path, returnSize, cur, 0);
+    return result_path;
+}
+
+//构建所有叶子节点的路径
+void construct_paths(TreeNode* root, int** paths, int* returnSize, int* cur, int top)
+{
+    if (root == NULL)
+    {
+        return ;
+    }
+    if (root->lnext == NULL && root->rnext == NULL)  //当前节点为叶子节点，说明一条路径已经遍历完了，要将路径存入结果中
+    {
+        int* temp = (int*)malloc(sizeof(int) * MaxSize);
+        for (int i = 0; i < top; i ++)
+        {
+            temp[i] = cur[i];   //这里需要注意的是不能把paths当作二维数组来操作，因为二重指针和二维数组不是同一个东西，指针的长度和int的长度可能不同
+        }
+        temp[top] = root->val;
+        paths[(*returnSize)++] = temp;
+    }
+    cur[top++] = root->val;   //路径放入暂存数组中
+    construct_paths(root->lnext, paths, returnSize, cur, top); //一直向左遍历
+    construct_paths(root->rnext, paths, returnSize, cur, top);
+}
+
 
 // //找到值为x的所有祖先
 // void FindAllAncestor(TreeNode* root, int target)
@@ -526,6 +598,27 @@ TreeNode* FindLowestCommonAnestor(TreeNode* root, TreeNode* p, TreeNode* q)
         return left;
     }//left==null, right==null
     return NULL;            //左子树和右子树都没有
+}
+
+
+//求二叉树的最大宽度,采用层序遍历
+int MaxWidth(TreeNode* root)
+{
+    SqQueue* Q = CreateSqQueue();
+    PushSqQueue(Q, root);
+    int sum = 0;
+    while (!EmptySqQueue(Q))
+    {
+        int size = Q->rear - Q->front;
+        sum = size > sum ? size : sum;
+        for (int i = 0; i < size; i ++)
+        {
+            root = PopSqQueue(Q);
+            if (root->lnext) PushSqQueue(Q, root->lnext);
+            if (root->rnext) PushSqQueue(Q, root->rnext);
+        }
+    }
+    return sum;
 }
 
 //********栈**************************
@@ -1403,4 +1496,10 @@ void visit(ThreadTreeNode* p)
 int max(int x, int y)
 {
     return x>y ? x : y;
+}
+
+//求两个值之间的较小值
+int min(int x, int y)
+{
+    return x>y ? y : x;
 }

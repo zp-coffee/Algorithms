@@ -3,6 +3,7 @@
 
 #include "stdio.h"
 #include "stdlib.h"
+#include "string.h"
 
 #define variable_type TreeNode*
 #define MaxSize 50
@@ -247,10 +248,22 @@ void DeleteTree(TreeNode* root);
 TreeNode* DeleteNode(TreeNode* root, int target);
 
 //求树的深度
-int DepthTree(TreeNode* root);
+int MaxDepthTree(TreeNode* root);
 
 //找最近的公共祖先
 TreeNode* FindLowestCommonAnestor(TreeNode* root, TreeNode* p, TreeNode* q);
+
+//求二叉树的最大宽度,采用层序遍历
+int MaxWidth(TreeNode* root);
+
+//求树的最小深度,指的是从深度最小的叶子节点开始到根节点的路径
+int MinDepthTree(TreeNode* root);
+
+//找到所有叶子节点的路径主函数
+int** FindAllPaths(TreeNode* root, int* returnSize);
+
+//构建所有叶子节点的路径
+void construct_paths(TreeNode* root, int** paths, int* returnSize, int* cur, int top);
 
 //*******共同操作***********************************************************
 
@@ -265,6 +278,9 @@ int CalAccumulation(int target, int num);
 
 //求两个值之间的较大值
 int max(int x, int y);
+
+//求两个值之间的较小值
+int min(int x, int y);
 
 //********顺序栈的基本操作******************
 
