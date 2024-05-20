@@ -3,17 +3,10 @@
 int main(void)
 {
     TreeNode* test = CreateTestTree();
+    char num[20];
     int size = 0;
-    int** temp = (int**)malloc(sizeof(int*) * MaxSize);
-    temp = FindAllPaths(test, &size);
-    for (int i = 0; i < size; i ++)
-    {
-        for (int j = 0; temp[i][j] != 0; j ++)
-        {
-            printf("%d ",temp[i][j]);
-        }
-        printf("\n");
-    }
+    Char2017Std(test, 1);
+    printf("\n");
     return 0;
 }
 
@@ -23,14 +16,47 @@ int main(void)
 TreeNode* CreateTestTree(void)
 {
     TreeNode* root = CreateRootTree();
+    root->val = '+';
+    AddLeftNode (root, 2, 1, '*');
+    AddRightNode(root, 2, 2, '-');
+
+    AddLeftNode (root, 3, 1, 'a');
+    AddRightNode(root, 3, 2, 'b');
+    //AddLeftNode (root, 3, 3, 'c');
+    AddRightNode(root, 3, 4, '-');
+
+    // AddLeftNode (root, 4, 1, 8);
+    // AddRightNode(root, 4, 2, 9);
+    // AddLeftNode (root, 4, 3, 10);
+    // AddRightNode(root, 4, 4, 11);
+    // AddLeftNode (root, 4, 5, 12);
+    // AddRightNode(root, 4, 6, 13);
+    AddLeftNode (root, 4, 7, 'c');
+    AddRightNode(root, 4, 8, 'd');
+    return root;
+}
+
+//创建一个作为调试的树
+TreeNode* CreateTestTree2(void)
+{
+    TreeNode* root = CreateRootTree();
     root->val = 1;
-    AddLeftNode(root, 2, 1, 2);
+    AddLeftNode (root, 2, 1, 2);
     AddRightNode(root, 2, 2, 3);
-    AddLeftNode(root, 3, 1, 4);
-    AddRightNode(root, 3, 2, 5);
-    AddLeftNode(root, 3, 3, 6);
-    AddRightNode(root, 3, 4, 7);
-    AddLeftNode(root, 4, 1, 8);
+
+    // AddLeftNode (root, 3, 1, 4);
+    // AddRightNode(root, 3, 2, 5);
+    // AddLeftNode (root, 3, 3, 6);
+    // AddRightNode(root, 3, 4, 7);
+
+    // AddLeftNode (root, 4, 1, 8);
+    // AddRightNode(root, 4, 2, 9);
+    // AddLeftNode (root, 4, 3, 10);
+    // AddRightNode(root, 4, 4, 11);
+    // AddLeftNode (root, 4, 5, 12);
+    // AddRightNode(root, 4, 6, 13);
+    // AddLeftNode (root, 4, 7, 14);
+    // AddRightNode(root, 4, 8, 15);
     return root;
 }
 
@@ -44,7 +70,7 @@ TreeNode* CreateRootTree(void)
 }
 
 //在树的第layer层的第number个位置添加一个节点作为左孩子，如果双亲不存在就返回错误
-void AddLeftNode(TreeNode* p, int layer, int number, int target)
+void AddLeftNode(TreeNode* p, int layer, int number, char target)
 {
     TreeNode* Lnode = (TreeNode *)malloc(sizeof(TreeNode)); //先将节点创建好
     Lnode->rnext = NULL;
@@ -74,6 +100,7 @@ void AddLeftNode(TreeNode* p, int layer, int number, int target)
             else
             {
                 cur = cur->rnext;
+                number -= CalAccumulation(2, layer-i)/2;
             }
         }
     } //循环结束即找到了需要添加孩子的节点
@@ -81,7 +108,7 @@ void AddLeftNode(TreeNode* p, int layer, int number, int target)
 }
 
 //在树的第几层的第几个节点添加右孩子,layer表示层数，number表示第几个节点，如果节点不存在就返回错误
-void AddRightNode(TreeNode* p, int layer, int number, int target)
+void AddRightNode(TreeNode* p, int layer, int number, char target)
 {
     TreeNode* Lnode = (TreeNode *)malloc(sizeof(TreeNode)); //先将节点创建好
     Lnode->rnext = NULL;
@@ -111,6 +138,7 @@ void AddRightNode(TreeNode* p, int layer, int number, int target)
             else
             {
                 cur = cur->rnext;
+                number -= CalAccumulation(2, layer-i)/2;
             }
         }
     } //循环结束即找到了需要添加孩子的节点
@@ -506,7 +534,7 @@ int MinDepthTree(TreeNode* root)
     return depth;
 }
 
-// //求出树的所有路径
+// //求出树的所有路径,字符串
 // void construct_paths(TreeNode* root, char** paths, int* returnSize, int* sta, int top) 
 // {
 //     if (root != NULL) {
@@ -546,7 +574,7 @@ void construct_paths(TreeNode* root, int** paths, int* returnSize, int* cur, int
     if (root->lnext == NULL && root->rnext == NULL)  //当前节点为叶子节点，说明一条路径已经遍历完了，要将路径存入结果中
     {
         int* temp = (int*)malloc(sizeof(int) * MaxSize);
-        for (int i = 0; i < top; i ++)
+        for (int i = 0; i < top; i ++)  //这里需要注意必须使用top，直接赋予指针cur的化会导致后面的路径也会加进来
         {
             temp[i] = cur[i];   //这里需要注意的是不能把paths当作二维数组来操作，因为二重指针和二维数组不是同一个东西，指针的长度和int的长度可能不同
         }
@@ -555,9 +583,8 @@ void construct_paths(TreeNode* root, int** paths, int* returnSize, int* cur, int
     }
     cur[top++] = root->val;   //路径放入暂存数组中
     construct_paths(root->lnext, paths, returnSize, cur, top); //一直向左遍历
-    construct_paths(root->rnext, paths, returnSize, cur, top);
+    construct_paths(root->rnext, paths, returnSize, cur, top); //左子树的情况遍历完之后遍历右子树的同时，因为top传的不是指针，同时导致了回溯
 }
-
 
 // //找到值为x的所有祖先
 // void FindAllAncestor(TreeNode* root, int target)
@@ -619,6 +646,221 @@ int MaxWidth(TreeNode* root)
         }
     }
     return sum;
+}
+
+//由前序遍历求后序遍历,只有满二叉树才能实现，普通二叉树只有一种遍历不能求出另一种遍历
+//前序遍历的结构：根 ｜ 左子树的根 左子树 右子树 ｜ 右子树的根 左子树 右子树
+//后序遍历的结构：左子树的根 左子树 右子树 ｜ 右子树的根 左子树 右子树 ｜ 根
+//思路：将结构不断视为 根｜左子树｜右子树，进行递归交换为 左子树 ｜ 右子树 ｜ 根
+void PreToPost(int* pre, int* post, int start, int end, int* num)
+{
+    if (start > end)       //递归结束条件
+    {
+        return ;
+    }
+    int root = pre[start];
+    if (start == end)      //递归结束条件
+    {
+        post[*num] = root;
+        (*num) ++;
+        return ;
+    }
+    int halfsize = (end - start) / 2;
+    PreToPost(pre ,post, start+1, start+halfsize, num);  //遍历左子树
+    PreToPost(pre, post, start+halfsize+1, end, num);    //遍历右子树
+    post[*num] = root;  //加上根
+    (*num) ++;
+}
+
+//在链表尾部加入一个节点
+void ListAddTail(List* L, List* new)
+{
+    List* cur = L;
+    while (cur->next != NULL)
+    {
+        cur = cur->next;
+    }
+    cur->next = new;
+}
+
+//树的后序遍历,操作函数为将叶子添加到链表中
+void postOrder3(TreeNode* root, List* list)
+{
+    if(root == NULL)
+    {
+        return;
+    }
+    postOrder3(root->lnext, list);
+    postOrder3(root->rnext, list);
+    if (root->lnext == NULL && root->rnext == NULL)
+    {
+        List* node = (List*)malloc(sizeof(List));
+        node->val = root->val;
+        node->next = NULL;
+        ListAddTail(list, node);
+    }
+}
+
+//将二叉树的所有叶子节点从左到右链接成一个单独的链表,采用后序遍历
+List* AllLeafList(TreeNode* root)
+{
+    List* returnlist = (List*)malloc(sizeof(List));
+    returnlist->next = NULL;
+    postOrder3(root, returnlist);
+    return returnlist;
+}
+
+//打印有头节点链表中的信息
+void printf_headlist(List *L)
+{
+    int i = 1;
+    List *p = L->next;
+    while (p != NULL)
+    {
+        printf("%d:%d\n",i++, p->val);
+        p = p->next;
+    }
+}
+
+//将二叉树的所有叶子节点链接起来，使用叶子节点的右指针来指向下一个叶子节点,采用层序遍历
+void AllLeafList2(TreeNode* root)
+{
+    SqQueue* Q = CreateSqQueue();
+    PushSqQueue(Q, root);
+    while (!EmptySqQueue(Q))
+    {
+        TreeNode* cur = PopSqQueue(Q);
+        if (cur->lnext) PushSqQueue(Q, cur->lnext);
+        if (cur->rnext) PushSqQueue(Q, cur->rnext);
+        if (cur->lnext == NULL && cur->rnext == NULL)  //为叶子节点
+        {
+            cur->rnext = ReadSqQueue(Q);
+        }
+    }
+}
+
+//判断两个二叉树是否相似,采用同时对两个树进行前序遍历
+int Similar1(TreeNode* root1, TreeNode* root2)
+{
+    int num = 1;
+    if (root1 == NULL && root2 == NULL)
+    {
+        return 1;
+    }
+    else if (root1 == NULL || root2 == NULL) //一个节点为空，另一个不为空
+    {
+        printf("no similar\n");
+        return 0;
+    }
+    if (num) 
+    {
+        num = Similar1(root1->lnext, root2->lnext);
+    }
+    else
+    {
+        return 0;
+    }
+    if (num)
+    {
+        num = Similar1(root1->rnext, root2->rnext);
+    }
+    else
+    {
+        return 0;
+    }
+    return num;
+}
+
+//判断两个二叉树是否相似,采用同时对两个树进行前序遍历
+int Similar(TreeNode* root1, TreeNode* root2)
+{
+    int left, right;
+    if (root1 == NULL && root2 == NULL)
+    {
+        return 1;
+    }
+    else if (root1 == NULL || root2 == NULL)
+    {
+        return 0;
+    }
+    else
+    {
+        left = Similar(root1->lnext, root2->lnext);
+        right = Similar(root1->rnext, root2->rnext);
+        return left && right;
+    }
+}
+
+//14年统考题，计算带权路径长度
+void WPL2014(TreeNode* root, int* sum, int depth)
+{
+    if (root == NULL)
+    {
+        return ;
+    }
+    if (root->lnext == NULL && root->rnext == NULL)
+    {
+        *sum += (root->val) * depth;
+    }
+    if (root->lnext) WPL2014(root->lnext, sum, depth+1);
+    if (root->rnext) WPL2014(root->rnext, sum, depth+1);
+}
+
+//17年统考题，中序遍历转换为表达式
+void Char2017(TreeNode* root, char* num, int* size)
+{
+    if (root == NULL)
+    {
+        return ;
+    }
+    if (root->lnext)
+    {
+        num[(*size)++] = '(';
+        Char2017(root->lnext, num, size);
+    }
+    if (root->lnext == NULL && root->rnext != NULL)
+    {
+        num[(*size)++] = '(';
+        num[(*size)++] = root->val;
+    }
+    else
+    {
+        num[(*size)++] = root->val;
+    }
+    // num[(*size)++] = root->val;
+
+    if (root->rnext) 
+    {
+        Char2017(root->rnext, num, size);
+        num[(*size)++] = ')';
+    }
+}
+
+//2017年统考题，观察可得到，除了根节点和叶节点外，遍历到其他节点时在左子树上加上左括号，在右子树上加上右括号
+void Char2017Std(TreeNode* root, int depth)
+{
+    if (root == NULL)
+    {
+        return ;
+    }
+    else if (root->lnext == NULL && root->rnext == NULL)
+    {
+        printf("%c", root->val);
+    }
+    else
+    {
+        if (depth > 1)
+        {
+            printf("(");
+        }
+        Char2017Std(root->lnext, depth+1);
+        printf("%c", root->val);
+        Char2017Std(root->rnext, depth+1);
+        if (depth > 1) 
+        {
+            printf(")");
+        }
+    }
 }
 
 //********栈**************************
@@ -780,6 +1022,12 @@ variable_type PopSqQueue(SqQueue* Q)
     variable_type temp = Q->data[Q->front];
     Q->front = (Q->front + 1) % MaxSize;
     return temp;
+}
+
+//读队头元素
+variable_type ReadSqQueue(SqQueue* Q)
+{
+    return Q->data[Q->front];
 }
 
 //*******链式存储队列***********************************************************

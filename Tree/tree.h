@@ -11,7 +11,7 @@
 //************************树************************
 typedef struct tree
 {
-    int val;
+    char val;
     struct tree *lnext;
     struct tree *rnext;
 }TreeNode;
@@ -34,6 +34,12 @@ typedef struct threenodetree
     int ltag;
     int rtag;
 }ThreadThreeNode;
+
+typedef struct listnode
+{
+    int val;
+    struct listnode* next;
+}List;
 
 //************************栈************************
 
@@ -65,10 +71,13 @@ typedef struct {
     LinkNode* rear;
 }LinkQueue;
 
-//************************函数************************
+//************************基本函数************************
 
 //创建一个作为调试的树
 TreeNode* CreateTestTree(void);
+
+//创建一个作为调试的树
+TreeNode* CreateTestTree2(void);
 
 //创建一个作为调试的线索树
 ThreadTreeNode* CreateTestThreadTree(void);
@@ -80,10 +89,10 @@ ThreadThreeNode* CreateTestThreadThreeTree(void);
 TreeNode* CreateRootTree(void);
 
 //为树的第几层的第几个节点添加左孩子,layer表示层数，number表示第几个节点，如果节点不存在就返回错误
-void AddLeftNode(TreeNode* p, int layer, int number, int target);
+void AddLeftNode(TreeNode* p, int layer, int number, char target);
 
 //为树的第几层的第几个节点添加右孩子,layer表示层数，number表示第几个节点，如果节点不存在就返回错误
-void AddRightNode(TreeNode* p, int layer, int number, int target);
+void AddRightNode(TreeNode* p, int layer, int number, char target);
 
 //创建一个线索树的根节点
 ThreadTreeNode* CreateRootThreadTree(void);
@@ -265,6 +274,42 @@ int** FindAllPaths(TreeNode* root, int* returnSize);
 //构建所有叶子节点的路径
 void construct_paths(TreeNode* root, int** paths, int* returnSize, int* cur, int top);
 
+//由前序遍历求后序遍历,只有满二叉树才能实现，普通二叉树只有一种遍历不能求出另一种遍历
+//前序遍历的结构：根 ｜ 左子树的根 左子树 右子树 ｜ 右子树的根 左子树 右子树
+//后序遍历的结构：左子树的根 左子树 右子树 ｜ 右子树的根 左子树 右子树 ｜ 根
+//思路：将结构不断视为 根｜左子树｜右子树，进行递归交换为 左子树 ｜ 右子树 ｜ 根
+void PreToPost(int* pre, int* post, int start, int end, int* num);
+
+//树的后序遍历,操作函数为将叶子添加到链表中
+void postOrder3(TreeNode* root, List* list);
+
+//将二叉树的所有叶子节点从左到右链接成一个链表,采用后序遍历
+List* AllLeafList(TreeNode* root);
+
+//打印有头节点链表中的信息
+void printf_headlist(List *L);
+
+//在链表尾部加入一个节点
+void ListAddTail(List* L, List* new);
+
+//将二叉树的所有叶子节点链接起来，使用叶子节点的右指针来指向下一个叶子节点,采用层序遍历
+void AllLeafList2(TreeNode* root);
+
+//判断两个二叉树是否相似,采用同时对两个树进行前序遍历
+int Similar1(TreeNode* root1, TreeNode* root2);
+
+//判断两个二叉树是否相似,采用同时对两个树进行前序遍历
+int Similar(TreeNode* root1, TreeNode* root2);
+
+//17年统考题，计算带权路径长度
+void WPL2014(TreeNode* root, int* sum, int depth);
+
+//17年统考题，中序遍历转换为表达式
+void Char2017(TreeNode* root, char* num, int* size);
+
+//2017年统考题，观察可得到，除了根节点和叶节点外，遍历到其他节点时在左子树上加上左括号，在右子树上加上右括号
+void Char2017Std(TreeNode* root, int depth);
+
 //*******共同操作***********************************************************
 
 //在访问该节点时修改左指针和右指针为前继节点和后继节点
@@ -332,6 +377,9 @@ void PushSqQueue(SqQueue* Q, variable_type val);
 
 //出队
 variable_type PopSqQueue(SqQueue* Q);
+
+//读队头元素
+variable_type ReadSqQueue(SqQueue* Q);
 
 //********链式队列的基本操作******************
 
