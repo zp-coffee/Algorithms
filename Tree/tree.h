@@ -11,7 +11,7 @@
 //************************树************************
 typedef struct tree
 {
-    char val;
+    int val;
     struct tree *lnext;
     struct tree *rnext;
 }TreeNode;
@@ -300,6 +300,24 @@ int Similar1(TreeNode* root1, TreeNode* root2);
 
 //判断两个二叉树是否相似,采用同时对两个树进行前序遍历
 int Similar(TreeNode* root1, TreeNode* root2);
+
+//统计二叉树中度为1的节点,采用前序遍历
+void CalOneNode(TreeNode* root, int* sum);
+
+//统计二叉树中度为2的节点,采用前序遍历
+void CalTwoNode(TreeNode* root, int* sum);
+
+//统计二叉树中度为0的节点,采用前序遍历
+void CalZeroNode(TreeNode* root, int* sum);
+
+//从二叉树中删除所有叶节点
+void DeleteZeroNode(TreeNode* root, TreeNode* pre, int num);
+
+//计算指定节点p所在的层次，采用层序遍历
+int FindNodeLevel(TreeNode* root, TreeNode* target, int* num);
+
+//找到二叉树中最大元素值
+void FindMaxNode(TreeNode* root, int* num);
 
 //17年统考题，计算带权路径长度
 void WPL2014(TreeNode* root, int* sum, int depth);

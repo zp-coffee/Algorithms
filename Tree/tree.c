@@ -3,9 +3,10 @@
 int main(void)
 {
     TreeNode* test = CreateTestTree();
-    char num[20];
-    int size = 0;
-    Char2017Std(test, 1);
+    int sum = 1;
+    TreeNode* test1 = test;
+    FindMaxNode(test, &sum);
+    printf("%d\n", sum);
     printf("\n");
     return 0;
 }
@@ -16,14 +17,14 @@ int main(void)
 TreeNode* CreateTestTree(void)
 {
     TreeNode* root = CreateRootTree();
-    root->val = '+';
-    AddLeftNode (root, 2, 1, '*');
-    AddRightNode(root, 2, 2, '-');
+    root->val = 1;
+    AddLeftNode (root, 2, 1, 2);
+    AddRightNode(root, 2, 2, 3);
 
-    AddLeftNode (root, 3, 1, 'a');
-    AddRightNode(root, 3, 2, 'b');
-    //AddLeftNode (root, 3, 3, 'c');
-    AddRightNode(root, 3, 4, '-');
+    AddLeftNode (root, 3, 1, 4);
+    AddRightNode(root, 3, 2, 5);
+    AddLeftNode (root, 3, 3, 6);
+    AddRightNode(root, 3, 4, 7);
 
     // AddLeftNode (root, 4, 1, 8);
     // AddRightNode(root, 4, 2, 9);
@@ -31,8 +32,8 @@ TreeNode* CreateTestTree(void)
     // AddRightNode(root, 4, 4, 11);
     // AddLeftNode (root, 4, 5, 12);
     // AddRightNode(root, 4, 6, 13);
-    AddLeftNode (root, 4, 7, 'c');
-    AddRightNode(root, 4, 8, 'd');
+    // AddLeftNode (root, 4, 7, 14);
+    // AddRightNode(root, 4, 8, 15);
     return root;
 }
 
@@ -503,7 +504,7 @@ TreeNode* DeleteNode(TreeNode* root, int target)
     return root;
 }
 
-//求树的最大深度
+//求树的最大深度,后序遍历
 int MaxDepthTree(TreeNode* root)
 {
     if (root == NULL)     //递归返回条件，递归到空节点为止
@@ -789,6 +790,110 @@ int Similar(TreeNode* root1, TreeNode* root2)
         right = Similar(root1->rnext, root2->rnext);
         return left && right;
     }
+}
+
+//统计二叉树中度为1的节点,采用前序遍历
+void CalOneNode(TreeNode* root, int* sum)
+{
+    if (root == NULL)
+    {
+        return ;
+    }
+    if ((root->lnext == NULL && root->rnext != NULL) || (root->lnext != NULL && root->rnext == NULL))
+    {
+        (*sum) ++;
+    }
+    if (root->rnext) CalOneNode(root->rnext, sum);
+    if (root->lnext) CalOneNode(root->lnext, sum);
+}
+
+//统计二叉树中度为2的节点,采用前序遍历
+void CalTwoNode(TreeNode* root, int* sum)
+{
+    if (root == NULL)
+    {
+        return ;
+    }
+    if (root->lnext != NULL && root->rnext != NULL)
+    {
+        (*sum) ++;
+    }
+    if (root->rnext) CalTwoNode(root->rnext, sum);
+    if (root->lnext) CalTwoNode(root->lnext, sum);
+}
+
+//统计二叉树中度为0的节点,采用前序遍历
+void CalZeroNode(TreeNode* root, int* sum)
+{
+    if (root == NULL)
+    {
+        return ;
+    }
+    if (root->lnext == NULL && root->rnext == NULL)
+    {
+        (*sum) ++;
+    }
+    if (root->rnext) CalZeroNode(root->rnext, sum);
+    if (root->lnext) CalZeroNode(root->lnext, sum);
+}
+
+//从二叉树中删除所有叶节点
+void DeleteZeroNode(TreeNode* root, TreeNode* pre, int num)
+{
+    if (root == NULL)
+    {
+        return ;
+    }
+    if (root->lnext == NULL && root->rnext == NULL)  //为叶子节点
+    {
+        if (num)  //为右节点
+        {
+            pre->rnext = NULL;
+            free(root);
+        }
+        else      //为左节点
+        {
+            pre->lnext = NULL;
+            free(root);
+        }
+    }
+    if (root->rnext) DeleteZeroNode(root->rnext, root, 1);
+    if (root->lnext) DeleteZeroNode(root->lnext, root, 0);
+}
+
+//计算指定节点p所在的层次，采用层序遍历
+int FindNodeLevel(TreeNode* root, TreeNode* target, int* num)
+{
+    SqQueue* Q = CreateSqQueue();
+    PushSqQueue(Q, root);
+    while(!EmptySqQueue(Q))
+    {
+        int size = Q->rear - Q->front;
+        for (int i = 0; i < size; i ++)
+        {
+            root = PopSqQueue(Q);
+            if (root == target)
+            {
+                return (*num);
+            }
+            if (root->lnext) PushSqQueue(Q, root->lnext);
+            if (root->rnext) PushSqQueue(Q, root->rnext);
+        }
+        (*num) ++;
+    }
+    return 0;
+}
+
+//找到二叉树中最大元素值,前序遍历
+void FindMaxNode(TreeNode* root, int* num)
+{
+    if (root == NULL)
+    {
+        return ;
+    }
+    *num = (*num) > root->val ? (*num) : root->val;
+    if (root->lnext) FindMaxNode(root->lnext, num);
+    if (root->rnext) FindMaxNode(root->rnext, num);
 }
 
 //14年统考题，计算带权路径长度
