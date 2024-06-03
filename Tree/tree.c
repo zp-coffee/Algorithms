@@ -1,13 +1,14 @@
 #include "tree.h"
 
+ThreadTreeNode* pre = NULL;
+TreeNode* treepre = NULL; //用来保存前一个节点进行比较
+
 int main(void)
 {
     TreeNode* test = CreateTestTree();
-    int sum = 1;
-    TreeNode* test1 = test;
-    FindMaxNode(test, &sum);
-    printf("%d\n", sum);
-    printf("\n");
+    TreeNode* test2 = CreateTestTree2();
+    printf("%d\n", FindBSTNodeLevel(test, test2));
+    //printf("\n");
     return 0;
 }
 
@@ -21,9 +22,9 @@ TreeNode* CreateTestTree(void)
     AddLeftNode (root, 2, 1, 2);
     AddRightNode(root, 2, 2, 3);
 
-    AddLeftNode (root, 3, 1, 4);
-    AddRightNode(root, 3, 2, 5);
-    AddLeftNode (root, 3, 3, 6);
+    // AddLeftNode (root, 3, 1, 4);
+    // AddRightNode(root, 3, 2, 5);
+    // AddLeftNode (root, 3, 3, 6);
     AddRightNode(root, 3, 4, 7);
 
     // AddLeftNode (root, 4, 1, 8);
@@ -41,7 +42,7 @@ TreeNode* CreateTestTree(void)
 TreeNode* CreateTestTree2(void)
 {
     TreeNode* root = CreateRootTree();
-    root->val = 1;
+    root->val = 7;
     AddLeftNode (root, 2, 1, 2);
     AddRightNode(root, 2, 2, 3);
 
@@ -968,6 +969,85 @@ void Char2017Std(TreeNode* root, int depth)
     }
 }
 
+//得到以一个节点为根的子树的高度，后序遍历，从下往上递归
+int GetHeight(TreeNode* root)
+{
+    if (root == NULL)
+    {
+        return 0;
+    }
+    int leftheight = GetHeight(root->lnext);  //左
+    if (leftheight == -1)
+    {
+        return -1;
+    }
+    int rightheight = GetHeight(root->rnext); //右
+    if (rightheight == -1)
+    {
+        return -1;
+    }
+    int result;
+    if (abs(rightheight - leftheight) > 1)    //中
+    {
+        return -1;
+    }
+    else
+    {
+        result = 1 + max(rightheight, leftheight);
+    }
+    return result;
+}
+
+//判断一棵树是否为平衡二叉树
+int JudgeBalanceTree(TreeNode* root)
+{
+    return GetHeight(root) == -1 ? 0 : 1;
+}
+
+//判断一个树是否为二叉排序树(BST),采用中序遍历，递归判断是否是递增
+int JudgeBST(TreeNode* root)
+{
+    if (root == NULL)
+    {
+        return 1;
+    }
+    int left = JudgeBST(root->lnext); //左
+
+    if (treepre != NULL && treepre->val >= root->val)
+    {
+        return 0;
+    }
+    treepre = root;
+
+    int right = JudgeBST(root->rnext);
+
+    return left&&right;
+}
+
+//查找二叉排序树中指定节点的层次
+int FindBSTNodeLevel(TreeNode* root, TreeNode* target)
+{
+    int count = 0;
+    TreeNode* temp = target;
+    if (target != NULL)
+    {
+        count ++;
+        while (target->val != root->val)
+        {
+            if (target->val > root->val)
+            {
+                root = root->rnext;
+            }
+            else if (target->val < root->val)
+            {
+                root = root->lnext;
+            }
+            count ++;
+        }
+    }
+    return count;
+}
+
 //********栈**************************
 
 //********顺序栈的基本操作**************
@@ -1428,7 +1508,6 @@ void PreorderConverse(ThreadThreeNode* root)
 
 //*******中序***********************************************************
 
-ThreadTreeNode* pre = NULL;
 //中序遍历线索化树
 void ThreadInOrder(ThreadTreeNode* root)
 {

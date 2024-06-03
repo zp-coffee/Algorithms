@@ -328,6 +328,18 @@ void Char2017(TreeNode* root, char* num, int* size);
 //2017年统考题，观察可得到，除了根节点和叶节点外，遍历到其他节点时在左子树上加上左括号，在右子树上加上右括号
 void Char2017Std(TreeNode* root, int depth);
 
+//得到以一个节点为根的子树的高度，后序遍历，从下往上递归
+int GetHeight(TreeNode* root);
+
+//判断一棵树是否为平衡二叉树
+int JudgeBalanceTree(TreeNode* root);
+
+//判断一个树是否为二叉排序树(BST),采用中序遍历，递归判断是否是递增
+int JudgeBST(TreeNode* root);
+
+//查找二叉排序树中指定节点的层次
+int FindBSTNodeLevel(TreeNode* root, TreeNode* target);
+
 //*******共同操作***********************************************************
 
 //在访问该节点时修改左指针和右指针为前继节点和后继节点
