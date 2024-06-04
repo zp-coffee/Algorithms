@@ -8,8 +8,8 @@ int last_numsize = 10;
 
 int main(void)
 {
-    int min = find_min_distance1(nums, nums1, nums2, 3, 4, 5);
-    printf("%d\n", min);
+    bubblesort3(nums3, 8);
+    printf_array(nums3, 8);
     return 0;
 }
 
@@ -472,19 +472,70 @@ int no_appearnum(int *num, int num_size)
     return num_size+1;
 }
 
-//冒泡排序
+//冒泡排序，还能简化
 void bubblesort(int *num, int num_size)
 {
+    int count = 0;
     for (int i = 0; i < num_size; i ++)
     {
-        for (int j = 0 ; j < num_size-1; j ++)
+        for (int j = 0 ; j < num_size-1; j ++)   //每次都将最大的元素移到最终的位置 
+        {
+            if (num[j] > num[j+1])
+            {
+                swap(&num[j], &num[j+1]);    //每次从第一个开始，不断地将小元素与大元素交换位置
+            }
+            count ++;
+        }
+    }
+    printf("%d\n", count);
+}
+
+//冒泡排序，简化，比较的次数少了将近一半，将最小的元素冒泡到最终位置
+void bubblesort2(int *num, int num_size)
+{
+    int count = 0;
+    for (int i = 0; i < num_size; i ++)
+    {
+        int flag = 0;
+        for (int j = num_size - 1; j > i; j --) //每次将最小的元素放到前面，后续不再进行比较
+        {
+            if (num[j-1] > num[j])
+            {
+                swap(&num[j-1], &num[j]);
+                flag = 1;
+            }
+            count ++;
+        }
+        if (flag == 0)
+        {
+            break;
+        }
+    }
+    printf("%d\n", count);
+}
+
+//冒泡排序，将最大的元素冒泡到最终位置
+void bubblesort3(int *num, int num_size)
+{
+    int count = 0;
+    for (int i = num_size - 1; i >= 0; i --)
+    {
+        int flag = 0;
+        for (int j = 0; j < i; j ++)
         {
             if (num[j] > num[j+1])
             {
                 swap(&num[j], &num[j+1]);
+                flag = 1;
             }
+            count ++;
+        }
+        if (flag == 0)
+        {
+            break;
         }
     }
+    printf("%d\n", count);
 }
 
 //选择排序
@@ -494,7 +545,7 @@ void selectsort(int *num, int num_size)
     for (int i = 0; i < num_size; i ++)
     {
         min = i;
-        for (int j = i+1; j < num_size; j ++)
+        for (int j = i+1; j < num_size; j ++)  //每一轮循环找到最小的元素插到前面
         {
             if (num[j] < num[min])
             {
@@ -510,7 +561,7 @@ void insertsort(int *num, int num_size)
 {
     for (int i = 1; i < num_size; i ++)
     {
-        for (int j = i; j > 0; j --)
+        for (int j = i; j > 0; j --)   //将后面无序的元素插入到前面有序的序列中
         {
             if (num[j] < num[j-1])
             {
@@ -519,6 +570,75 @@ void insertsort(int *num, int num_size)
             else
             {
                 continue;
+            }
+        }
+    }
+}
+
+//插入排序的另一种写法
+void insertsort2(int *num, int num_size)
+{
+    int temp = 0;    //哨兵
+    int i, j;
+    for (i = 1; i < num_size; i ++)
+    {
+        if (num[i] < num[i-1])
+        {
+            temp = num[i];
+            for (j = i-1; num[j] > temp && j >= 0; j --)
+            {
+                num[j+1] = num[j];        //往后移
+            }
+            num[j+1] = temp;
+        }
+    }
+}
+
+//插入排序，使用折半查找，只能用于顺序存储的线性表
+void insertsort3(int *num, int num_size)
+{
+    int i, j, low, high, mid, temp;
+    for (i = 1; i < num_size; i ++)
+    {
+        temp = num[i];
+        low = 0;
+        high = i - 1;
+        while (low <= high)  //先找到插入位置，折半查找后的结果high+1始终为元素应该插入的位置，当不需要插入时为原位置
+        {
+            mid = (low + high) / 2; 
+            if (temp > num[mid]) //在右边
+            {
+                low = mid + 1;
+            }
+            else if (temp <= num[mid])  //在左边
+            {
+                high = mid - 1;
+            }
+        }
+        for (j = i - 1; j >= high + 1; j --) //把需要插入的位置high+1到i-1的元素统一后移
+        {
+            num[j+1] = num[j];
+        }
+        num[high+1]  = temp;  //插入
+    }
+}
+
+//希尔排序，在插入排序的基础上将单位1改为d
+void shellsort(int *num, int num_size)
+{
+    int i, d, j, temp;
+    for (d = num_size/2; d >= 1; d/=2)
+    {
+        for (i = d; i < num_size; i ++)
+        {
+            if (num[i] < num[i-d])   //不再与前一个元素比较，而是与前d个元素比较
+            {
+                temp = num[i];
+                for (j = i-d; j >= 0 && num[j] > temp; j-=d)
+                {
+                    num[j+d] = num[j];
+                }
+                num[j+d] = temp;
             }
         }
     }

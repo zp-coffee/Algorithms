@@ -73,11 +73,26 @@ int no_appearnum(int *num, int num_size);
 //冒泡排序
 void bubblesort(int *num, int num_size);
 
+//冒泡排序，简化
+void bubblesort2(int *num, int num_size);
+
+//冒泡排序，将最大的元素冒泡到最终位置
+void bubblesort3(int *num, int num_size);
+
 //选择排序
 void selectsort(int *num, int num_size);
 
 //插入排序
 void insertsort(int *num, int num_size);
+
+//插入排序的另一种写法
+void insertsort2(int *num, int num_size);
+
+//插入排序，使用折半查找，只能用于顺序存储的线性表
+void insertsort3(int *num, int num_size);
+
+//希尔排序，在插入排序的基础上将单位1改为d
+void shellsort(int *num, int num_size);
 
 //快速排序
 void quicksort(int *num, int start, int end);
