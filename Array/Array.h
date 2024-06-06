@@ -98,7 +98,19 @@ void shellsort(int *num, int num_size);
 void quicksort(int *num, int start, int end);
 
 //快速排序自己的实现方法
-void quicksort1(int *num, int start, int end);
+void quicksort2(int *num, int start, int end);
+
+//将所有奇数放到所有偶数前面
+void quickmove(int *num, int num_size);
+
+//找到第k大的元素，基于快速排序，通过比较枢轴pivot与k来进行递归
+int kth_elem(int *num, int left, int right, int k);
+
+//将数组排为1，2，3，1，2，3，1，2，3的形式
+void Flag_Arrange(int *num, int num_size);
+
+//2016年真题
+int num_2016(int *num, int left, int right, int num_size);
 
 //找三个数组中的三元组的最小距离
 int find_min_distance(int *num1, int *num2, int *num3, int num_size1, int num_size2, int num_size3);

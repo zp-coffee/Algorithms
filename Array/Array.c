@@ -2,14 +2,14 @@
 
 int nums[3] = {-1,0,9};
 int nums1[4] = {-25,-10,10,11};
-int nums2[5] = {2,9,17,30,41};
+int nums2[14] = {1,2,1,2,0,2,1,2,2,1,0,0,0,0};
 int nums3[8] = {4,2,8,5,3,1,0,9};
 int last_numsize = 10;
 
 int main(void)
 {
-    bubblesort3(nums3, 8);
-    printf_array(nums3, 8);
+    printf("%d\n", num_2016(nums3, 0, 7, 8));
+    //printf_array(nums2, 14);
     return 0;
 }
 
@@ -37,6 +37,7 @@ int search_a_num(int *num, int num_size, int target)
     }
     return -1;
 }
+
 //给你一个数组 nums 和一个值 val，你需要原地移除所有数值等于 val 的元素，并返回移除后数组的新长度
 int delete_nums(int *num, int num_size, int target)
 {
@@ -714,6 +715,173 @@ void quicksort1(int *num, int start, int end)
     }
     quicksort1(num, start, left-1);
     quicksort1(num, left+1, end);
+}
+
+//快速排序
+void quicksort2(int *num, int start, int end)
+{
+    if (start >= end)
+    {
+        return ;
+    }
+    int temp = num[start];
+    int left = start;
+    int right = end;
+    while (left < right)
+    {
+        while (left < right && num[right] >= temp) //必须添加left<right条件，否则会一直自减
+        {
+            right --;
+        }
+        swap(&num[left], &num[right]);  //此时right的元素小与基准值，需要移到左边
+
+        while (left < right && num[left] <= temp)
+        {
+            left ++;
+        }
+        swap(&num[right], &num[left]);
+    }
+    swap(&num[left], &temp);         //此时left和right重合，就是基准值的最终位置
+    quicksort2(num, start, left-1);
+    quicksort2(num, left+1, end);
+}
+
+//将所有奇数放到所有偶数前面
+void quickmove(int *num, int num_size)
+{
+    int left = 0;
+    int right = num_size - 1;
+    while (left < right)
+    {
+        while (left < right && num[left]%2 != 0) //是奇数就往后移
+        {
+            left ++;
+        }
+        swap(&num[left], &num[right]);
+
+        while (left < right && num[right]%2 == 0) //是偶数就往前移
+        {
+            right --;
+        }
+        swap(&num[left], &num[right]);
+    }
+}
+
+//找到第k大的元素，基于快速排序，通过比较枢轴pivot与k来进行递归
+//当num[m] = pivot，m = k时，即piovt就是要找的目标值
+//m<k时，所要寻找的元素在num[m+1...n]中
+//m>k时，所要寻找的元素在num[0...m-1]中
+int kth_elem(int *num, int left, int right, int k)
+{
+    int left_temp = left;
+    int right_temp = right;
+    int piovt = num[left];
+    //以下部分实现快排
+    while (left < right)
+    {
+        while (num[right] > piovt)
+        {
+            right --;
+        }
+        swap(&num[right], &num[left]);
+
+        while (num[left] < piovt)
+        {
+            left ++;
+        }
+        swap(&num[left], &num[right]);
+    }
+    num[left] = piovt;
+    //以下部分实现寻找第k大的元素
+    if (left == k)
+    {
+        return num[left];
+    }
+    else if (left < k)  //在右边区域
+    {
+        return kth_elem(num, left+1, right_temp, k);
+    }
+    else if (left > k)  //在左边区域
+    {
+        return kth_elem(num, left_temp, left-1, k);
+    }
+    return num[left];
+}
+
+typedef enum{RED, WHITE, BLUE} color;
+
+//将数组排为1，2，3，1，2，3，1，2，3的形式
+void Flag_Arrange(int *num, int num_size)
+{
+    int i = 0, j = 0, k = num_size-1;
+    while (j <= k)
+    {
+        switch (num[j])
+        {
+        case RED:
+            swap(&num[i], &num[j]);
+            i ++;
+            j ++;
+            break;
+        
+        case WHITE:
+            j ++;
+            break;
+
+        case BLUE:
+            swap(&num[j], &num[k]);
+            k --;
+            break;   //这里不能添加j++，防止交换之后还是蓝色
+        
+        default:
+            break;
+        }
+    }
+}
+
+//2016年真题
+int num_2016(int *num, int left, int right, int num_size)
+{
+    int left_temp = left;
+    int right_temp = right;
+    int piovt = num[left];
+    int sum1 = 0, sum2 = 0;
+    while (left < right)
+    {
+        while (num[right] > piovt)
+        {
+            right --;
+        }
+        swap(&num[right], &num[left]);
+
+        while (num[left] < piovt)
+        {
+            left ++;
+        }
+        swap(&num[left], &num[right]);
+    }
+    num[left] = piovt;
+    if (left == (num_size/2-1))
+    {
+        for (int i = 0; i <= left; i ++)
+        {
+            sum1 += num[i];
+        }
+        for (int i = left + 1; i < num_size; i ++)
+        {
+            sum2 += num[i];
+        }
+        return sum2 - sum1;
+    }
+    else if (left > (num_size/2-1))  //分割点在左边
+    {
+        return num_2016(num, left_temp, left-1, num_size);
+    }
+    else if (left < (num_size/2-1))  //分割点在右边
+    {
+        return num_2016(num, left+1, right_temp, num_size);
+    }
+    return 0;
 }
 
 //找三个数组中的三元组的最小距离
