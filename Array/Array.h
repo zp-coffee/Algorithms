@@ -112,6 +112,15 @@ void Flag_Arrange(int *num, int num_size);
 //2016年真题
 int num_2016(int *num, int left, int right, int num_size);
 
+//先建立大根堆,当使用顺序存储存放二叉树时，num[0]不存放数据，从1开始，这样才能满足2n和2n+1为左孩子和右孩子
+void buildmaxheap(int *num, int num_size);
+
+//调整大根堆
+void headadjust(int *num, int k, int num_size);
+
+//堆排序
+void Heapsort(int *num, int num_size);
+
 //找三个数组中的三元组的最小距离
 int find_min_distance(int *num1, int *num2, int *num3, int num_size1, int num_size2, int num_size3);
 

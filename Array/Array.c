@@ -3,13 +3,13 @@
 int nums[3] = {-1,0,9};
 int nums1[4] = {-25,-10,10,11};
 int nums2[14] = {1,2,1,2,0,2,1,2,2,1,0,0,0,0};
-int nums3[8] = {4,2,8,5,3,1,0,9};
+int nums3[9] = {0,4,2,8,5,3,1,0,9};
 int last_numsize = 10;
 
 int main(void)
 {
-    printf("%d\n", num_2016(nums3, 0, 7, 8));
-    //printf_array(nums2, 14);
+    heapssort(nums3, 8);
+    printf_array(nums3, 9);
     return 0;
 }
 
@@ -507,7 +507,7 @@ void bubblesort2(int *num, int num_size)
             }
             count ++;
         }
-        if (flag == 0)
+        if (flag == 0)  //经过一轮的比较没有需要进行交换的元素，说明已经有序，不需要再进行循环
         {
             break;
         }
@@ -554,6 +554,50 @@ void selectsort(int *num, int num_size)
             }
         }
         swap(&num[i], &num[min]);
+    }
+}
+
+//堆排序
+//先建立大根堆,当使用顺序存储存放二叉树时，num[0]不存放数据，从1开始，这样才能满足2n和2n+1为左孩子和右孩子
+void buildmaxheap(int *num, int num_size)  //这里的num_size指的是数组的长度不包括num[0]
+{
+    for (int i = num_size/2; i >=1; i --)  //将堆视为一个二叉树，num_size/2的位置为树中最后一个根节点
+    {  
+        headadjust(num, i, num_size);
+    }
+}
+
+//调整大根堆
+void headadjust(int *num, int k, int num_size)  //k为根节点的编号
+{
+    num[0] = num[k];  //暂存这个值
+    for (int i = 2*k; i <= num_size; i *= 2)
+    {
+        if (i < num_size && num[i] < num[i+1])  //找到左右孩子中更大的那个孩子，i<num_size是为了保证有右孩子
+        {
+            i ++;
+        }
+        if (num[0] > num[i])
+        {
+            break;
+        }
+        else
+        {
+            num[k] = num[i];
+            k = i;            //交换位置之后可能会破坏下面的次序，将k赋值为i再进行判断
+        }
+    }
+    num[k] = num[0];
+}
+
+//先建立大根堆，再依次输出
+void Heapsort(int *num, int num_size)
+{
+    buildmaxheap(num, num_size);
+    for (int i = num_size; i > 1; i --)
+    {
+        swap(&num[1], &num[i]);   //把根节点(最大的元素)依次放到最后的节点中，之后大根堆次序打乱，重新排序
+        headadjust(num, 1, i-1);  //每一次输出之后需要调整的长度就变短
     }
 }
 
