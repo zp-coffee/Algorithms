@@ -100,6 +100,12 @@ void quicksort(int *num, int start, int end);
 //快速排序自己的实现方法
 void quicksort2(int *num, int start, int end);
 
+//归并有序序列
+void Merge(int *num, int low, int mid, int high);
+
+//归并排序
+void MergeSort(int *num, int low, int high);
+
 //将所有奇数放到所有偶数前面
 void quickmove(int *num, int num_size);
 

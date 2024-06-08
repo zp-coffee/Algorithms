@@ -1,14 +1,14 @@
 #include"Array.h"
 
 int nums[3] = {-1,0,9};
-int nums1[4] = {-25,-10,10,11};
+int nums1[9] = {-25,-10,10,11};
 int nums2[14] = {1,2,1,2,0,2,1,2,2,1,0,0,0,0};
-int nums3[9] = {0,4,2,8,5,3,1,0,9};
+int nums3[9] = {0,4,2,8,5,3,1,3,9};
 int last_numsize = 10;
 
 int main(void)
 {
-    heapssort(nums3, 8);
+    Mergesort(nums3, 0, 8);
     printf_array(nums3, 9);
     return 0;
 }
@@ -598,6 +598,47 @@ void Heapsort(int *num, int num_size)
     {
         swap(&num[1], &num[i]);   //把根节点(最大的元素)依次放到最后的节点中，之后大根堆次序打乱，重新排序
         headadjust(num, 1, i-1);  //每一次输出之后需要调整的长度就变短
+    }
+}
+
+//归并有序序列
+void Merge(int *num, int low, int mid, int high)
+{
+    int i, k, j;
+    for (i = 0; i <= high; i ++)
+    {
+        nums1[i] = num[i];
+    }
+    for (i = low, k = low, j = mid+1; i <= mid && j <= high; k ++)
+    {
+        if (nums1[i] <= nums1[j])
+        {
+            num[k] = nums1[i++];
+        }
+        else 
+        {
+            num[k] = nums1[j++];
+        }
+    }
+    while (i <= mid)
+    {
+        num[k++] = nums1[i++];
+    }
+    while (j <= high)
+    {
+        num[k++] = nums1[j++];
+    }
+}
+
+//归并排序
+void MergeSort(int *num, int low, int high)
+{
+    if (low < high)
+    {
+        int mid = (low + high) / 2;
+        MergeSort(num, low, mid);     //递归将前面的序列分组排序
+        MergeSort(num, mid+1, high);  //递归将后面的序列分组排序
+        Merge(num, low, mid, high);   //排序进行的操作
     }
 }
 
