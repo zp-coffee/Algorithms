@@ -3,13 +3,13 @@
 int nums[3] = {-1,0,9};
 int nums1[9] = {-25,-10,10,11};
 int nums2[14] = {1,2,1,2,0,2,1,2,2,1,0,0,0,0};
-int nums3[9] = {0,4,2,8,5,3,1,3,9};
+int nums3[9] = {0,4,2,8,5,3,1,3,6};
 int last_numsize = 10;
 
 int main(void)
 {
-    Mergesort(nums3, 0, 8);
-    printf_array(nums3, 9);
+    countingsort(nums3, nums1, 9);
+    printf_array(nums1, 9);
     return 0;
 }
 
@@ -649,7 +649,7 @@ void insertsort(int *num, int num_size)
     {
         for (int j = i; j > 0; j --)   //将后面无序的元素插入到前面有序的序列中
         {
-            if (num[j] < num[j-1])
+            if (num[j-1] > num[j])
             {
                 swap(&num[j], &num[j-1]);
             }
@@ -829,6 +829,30 @@ void quicksort2(int *num, int start, int end)
     swap(&num[left], &temp);         //此时left和right重合，就是基准值的最终位置
     quicksort2(num, start, left-1);
     quicksort2(num, left+1, end);
+}
+
+//计数排序，需要三个数组，一个原始数组，一个计数数组，一个最终排序数组
+void countingsort(int *num, int *result, int num_size)
+{
+    int *countnum = (int *)malloc(sizeof(int) * (num_size+1));
+    for (int i = 0; i < num_size; i ++)   //初始化计数数组
+    {
+        countnum[i] = 0;
+    }
+    for (int i = 0; i < num_size; i ++)   //对原始数组进行计数
+    {
+        countnum[num[i]] ++;
+    }
+    for (int i = 1; i < num_size; i ++)   //对计数数组进行统计
+    {
+        countnum[i] += countnum[i-1];
+    }
+    for (int i = num_size-1; i >= 0; i --)
+    {
+        result[countnum[num[i]] - 1] = num[i];  //计数数组中存储的是小于等于i的数量，需要减1
+        countnum[num[i]] --;  //如果有重复的数，减1
+    }
+    free(countnum);
 }
 
 //将所有奇数放到所有偶数前面

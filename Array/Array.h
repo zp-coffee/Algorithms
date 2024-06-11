@@ -127,6 +127,9 @@ void headadjust(int *num, int k, int num_size);
 //堆排序
 void Heapsort(int *num, int num_size);
 
+//计数排序
+void countingsort(int *num, int *result, int num_size);
+
 //找三个数组中的三元组的最小距离
 int find_min_distance(int *num1, int *num2, int *num3, int num_size1, int num_size2, int num_size3);
 
