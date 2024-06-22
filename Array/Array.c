@@ -1,15 +1,16 @@
 #include"Array.h"
 
 int nums[3] = {-1,0,9};
-int nums1[9] = {-25,-10,10,11};
+int nums1[10] = {-25,-10,10,11};
 int nums2[14] = {1,2,1,2,0,2,1,2,2,1,0,0,0,0};
-int nums3[9] = {0,4,2,8,5,3,1,3,6};
+int nums3[10] = {0,0,4,2,8,5,3,1,3,6};
 int last_numsize = 10;
 
 int main(void)
 {
-    countingsort(nums3, nums1, 9);
-    printf_array(nums1, 9);
+    //countingsort(nums3, nums1, 10);
+    //printf_array(nums1, 10);
+    printf("numk:%d\n", kth_elem(nums3, 1, 9, 5));
     return 0;
 }
 
@@ -473,11 +474,102 @@ int no_appearnum(int *num, int num_size)
     return num_size+1;
 }
 
-//冒泡排序，还能简化
+//***********************排序算法***********************
+
+//插入排序，从第一个元素开始，使前面的序列保持有序，再一个一个从后面加入元素，使保持有序，稳定的，每一趟并不能得到一个最终位置
+void insertsort(int *num, int num_size)
+{
+    for (int i = 1; i < num_size; i ++)
+    {
+        for (int j = i; j > 0; j --)   //将后面无序的元素插入到前面有序的序列中,这种写法时间复杂度至少为n2
+        {
+            if (num[j-1] > num[j])
+            {
+                swap(&num[j], &num[j-1]);
+            }
+            else
+            {
+                continue;
+            }
+        }
+    }
+}
+
+//插入排序的另一种写法，上述采用不断交换的方法，一次交换需要移动三次，而这里采用往后移的方法，交换一个位置只需要一次
+void insertsort2(int *num, int num_size)
+{
+    int temp = 0;    //哨兵
+    int i, j;
+    for (i = 1; i < num_size; i ++)
+    {
+        if (num[i] < num[i-1])   //先比较再循环，在最好情况下能达到O(n)
+        {
+            temp = num[i];
+            for (j = i-1; num[j] > temp && j >= 0; j --)
+            {
+                num[j+1] = num[j];        //往后移
+            }
+            num[j+1] = temp;
+        }
+    }
+}
+
+//插入排序，使用折半查找，只能用于顺序存储的线性表，直接对半查找，减少了比较元素的次数，但是移动元素的次数不变，时间复杂度仍为n2
+void insertsort3(int *num, int num_size)
+{
+    int i, j, low, high, mid, temp;
+    for (i = 1; i < num_size; i ++)
+    {
+        temp = num[i];
+        low = 0;
+        high = i - 1;
+        while (low <= high)  //先找到插入位置，折半查找后的结果high+1始终为元素应该插入的位置，当不需要插入时为原位置
+        {
+            mid = (low + high) / 2; 
+            if (temp > num[mid]) //在右边
+            {
+                low = mid + 1;
+            }
+            else if (temp <= num[mid])  //在左边
+            {
+                high = mid - 1;
+            }
+        }
+        for (j = i - 1; j >= high + 1; j --) //把需要插入的位置high+1到i-1的元素统一后移
+        {
+            num[j+1] = num[j];  //最坏情况下，1+2+3+...+n-1 = n(n-1)/2，时间复杂度为n2
+        }
+        num[high+1]  = temp;  //插入
+    }
+}
+
+//希尔排序，在插入排序的基础上将单位1改为d，不稳定
+void shellsort(int *num, int num_size)  
+{
+    int i, d, j, temp;
+    for (d = num_size/2; d >= 1; d/=2)  //以插入排序的方法进行排序，只是将序列缩小，每一趟之后将进行比较的序列扩大，稳定
+    {
+        for (i = d; i < num_size; i ++)
+        {
+            if (num[i] < num[i-d])   //不再与前一个元素比较，而是与前d个元素比较
+            {
+                temp = num[i];
+                for (j = i-d; j >= 0 && num[j] > temp; j-=d) //将数据后移
+                {
+                    num[j+d] = num[j];
+                }
+                num[j+d] = temp;
+            }
+        }
+    }
+}
+
+
+//冒泡排序，还能简化，基于交换
 void bubblesort(int *num, int num_size)
 {
     int count = 0;
-    for (int i = 0; i < num_size; i ++)
+    for (int i = 0; i < num_size; i ++)  //表示趟数，每一趟都遍历整个序列，与初始状态无关
     {
         for (int j = 0 ; j < num_size-1; j ++)   //每次都将最大的元素移到最终的位置 
         {
@@ -491,18 +583,18 @@ void bubblesort(int *num, int num_size)
     printf("%d\n", count);
 }
 
-//冒泡排序，简化，比较的次数少了将近一半，将最小的元素冒泡到最终位置
+//冒泡排序，简化，比较的次数少了将近一半，将最小的元素冒泡到最终位置，稳定算法
 void bubblesort2(int *num, int num_size)
 {
     int count = 0;
-    for (int i = 0; i < num_size; i ++)
+    for (int i = 0; i < num_size; i ++)   //表示趟数
     {
-        int flag = 0;
+        int flag = 0;                     //判断后序的序列是否已经有序，及时终止，此时与初始状态有关
         for (int j = num_size - 1; j > i; j --) //每次将最小的元素放到前面，后续不再进行比较
         {
-            if (num[j-1] > num[j])
+            if (num[j] < num[j-1])
             {
-                swap(&num[j-1], &num[j]);
+                swap(&num[j], &num[j-1]);   //以不断交换相邻元素来使每次最大的元素或最小的元素到达最终位置
                 flag = 1;
             }
             count ++;
@@ -539,11 +631,49 @@ void bubblesort3(int *num, int num_size)
     printf("%d\n", count);
 }
 
-//选择排序
+//快速排序，每次选择一个元素作为基准，使大于该基准的元素排在右边，小于该基准的元素排在左边，当left=right时，把基准的值赋给重合点
+void quicksort(int *num, int start, int end) //后续再递归地对前面排好的序列和后面排好的序列进行快排，(3,3,2)，不稳定
+{
+    if (start >= end)
+    {
+        return ;
+    }
+    int left = start;
+    int right = end;
+    int point = num[left];   //一开始从左边取一个元素，所以从右边开始比较
+    while (left < right)     //最左边的值初始为point，所以从右边开始比较
+    {
+        while (right > left && num[right] >= point) //确保目前right所在的值比point小，也就是应该放左边
+        {                                           //这里必须加=，因为当num[left] = num[right]时会一直循环
+            right --;
+        }
+        if (right > left)
+        {
+            num[left] = num[right];
+        }
+        while (right > left && num[left] <= point) //确保目前left所在的值比point大，也就是应该在右边
+        {
+            left ++;
+        }
+        if (right > left)
+        {
+            num[right] = num[left];
+        }
+        if (left >= right) //最后left和right重合，也就是point所应该在的位置
+        {
+            num[left] = point;
+        }
+    }
+    quicksort(num, start, left-1);
+    quicksort(num, left+1, end);
+}
+
+
+//简单选择排序(2,2,1),是不稳定的
 void selectsort(int *num, int num_size)
 {
     int min = 0;
-    for (int i = 0; i < num_size; i ++)
+    for (int i = 0; i < num_size; i ++)      //表示趟数，每次将最小的元素移到最前面
     {
         min = i;
         for (int j = i+1; j < num_size; j ++)  //每一轮循环找到最小的元素插到前面
@@ -557,7 +687,7 @@ void selectsort(int *num, int num_size)
     }
 }
 
-//堆排序
+//堆排序,不稳定
 //先建立大根堆,当使用顺序存储存放二叉树时，num[0]不存放数据，从1开始，这样才能满足2n和2n+1为左孩子和右孩子
 void buildmaxheap(int *num, int num_size)  //这里的num_size指的是数组的长度不包括num[0]
 {
@@ -584,7 +714,7 @@ void headadjust(int *num, int k, int num_size)  //k为根节点的编号
         else
         {
             num[k] = num[i];
-            k = i;            //交换位置之后可能会破坏下面的次序，将k赋值为i再进行判断
+            k = i;            //交换位置之后可能会破坏下面的次序，将k赋值为i再进行判断，此时的i为调整的子树
         }
     }
     num[k] = num[0];
@@ -601,15 +731,45 @@ void Heapsort(int *num, int num_size)
     }
 }
 
+//判断是否满足小根堆
+int Judgeminheap(int *num, int num_size)
+{
+    if (num_size%2 == 0)  //偶数个，有单分支
+    {
+        if (num[num_size/2] > num[num_size])
+        {
+            return 0;
+        }
+        for (int i = num_size/2 - 1; i >= 1; i --)
+        {
+            if (num[i] > num[2*i] || num[i] > num[2*i+1])
+            {
+                return 0;
+            }
+        }
+    }
+    else  //奇数个元素
+    {
+        for (int i = num_size/2; i >= 1; i --)
+        {
+            if (num[i] > num[2*i] || num[i] > num[2*i+1])
+            {
+                return 0;
+            }
+        }
+    }
+    return 1;
+}
+
 //归并有序序列
 void Merge(int *num, int low, int mid, int high)
 {
     int i, k, j;
     for (i = 0; i <= high; i ++)
     {
-        nums1[i] = num[i];
+        nums1[i] = num[i];      //先将数据都复制到另一个数组中
     }
-    for (i = low, k = low, j = mid+1; i <= mid && j <= high; k ++)
+    for (i = low, k = low, j = mid+1; i <= mid && j <= high; k ++) //每次取较小值存放在原数组中
     {
         if (nums1[i] <= nums1[j])
         {
@@ -620,7 +780,7 @@ void Merge(int *num, int low, int mid, int high)
             num[k] = nums1[j++];
         }
     }
-    while (i <= mid)
+    while (i <= mid)            //将未比较完的剩余部分复制到原数组中
     {
         num[k++] = nums1[i++];
     }
@@ -630,10 +790,10 @@ void Merge(int *num, int low, int mid, int high)
     }
 }
 
-//归并排序
+//归并排序，从前往后依次比较，是稳定的
 void MergeSort(int *num, int low, int high)
 {
-    if (low < high)
+    if (low < high)                   //递归结束条件
     {
         int mid = (low + high) / 2;
         MergeSort(num, low, mid);     //递归将前面的序列分组排序
@@ -642,196 +802,7 @@ void MergeSort(int *num, int low, int high)
     }
 }
 
-//插入排序
-void insertsort(int *num, int num_size)
-{
-    for (int i = 1; i < num_size; i ++)
-    {
-        for (int j = i; j > 0; j --)   //将后面无序的元素插入到前面有序的序列中
-        {
-            if (num[j-1] > num[j])
-            {
-                swap(&num[j], &num[j-1]);
-            }
-            else
-            {
-                continue;
-            }
-        }
-    }
-}
-
-//插入排序的另一种写法
-void insertsort2(int *num, int num_size)
-{
-    int temp = 0;    //哨兵
-    int i, j;
-    for (i = 1; i < num_size; i ++)
-    {
-        if (num[i] < num[i-1])
-        {
-            temp = num[i];
-            for (j = i-1; num[j] > temp && j >= 0; j --)
-            {
-                num[j+1] = num[j];        //往后移
-            }
-            num[j+1] = temp;
-        }
-    }
-}
-
-//插入排序，使用折半查找，只能用于顺序存储的线性表
-void insertsort3(int *num, int num_size)
-{
-    int i, j, low, high, mid, temp;
-    for (i = 1; i < num_size; i ++)
-    {
-        temp = num[i];
-        low = 0;
-        high = i - 1;
-        while (low <= high)  //先找到插入位置，折半查找后的结果high+1始终为元素应该插入的位置，当不需要插入时为原位置
-        {
-            mid = (low + high) / 2; 
-            if (temp > num[mid]) //在右边
-            {
-                low = mid + 1;
-            }
-            else if (temp <= num[mid])  //在左边
-            {
-                high = mid - 1;
-            }
-        }
-        for (j = i - 1; j >= high + 1; j --) //把需要插入的位置high+1到i-1的元素统一后移
-        {
-            num[j+1] = num[j];
-        }
-        num[high+1]  = temp;  //插入
-    }
-}
-
-//希尔排序，在插入排序的基础上将单位1改为d
-void shellsort(int *num, int num_size)
-{
-    int i, d, j, temp;
-    for (d = num_size/2; d >= 1; d/=2)
-    {
-        for (i = d; i < num_size; i ++)
-        {
-            if (num[i] < num[i-d])   //不再与前一个元素比较，而是与前d个元素比较
-            {
-                temp = num[i];
-                for (j = i-d; j >= 0 && num[j] > temp; j-=d)
-                {
-                    num[j+d] = num[j];
-                }
-                num[j+d] = temp;
-            }
-        }
-    }
-}
-
-//快速排序
-void quicksort(int *num, int start, int end)
-{
-    if (start >= end)
-    {
-        return ;
-    }
-    int left = start;
-    int right = end;
-    int point = num[left];
-    while (left < right)  //最左边的值初始为point，所以从右边开始比较
-    {
-        while (right > left && num[right] > point) //确保目前right所在的值比point小，也就是应该放左边
-        {
-            right --;
-        }
-        if (right > left)
-        {
-            num[left] = num[right];
-        }
-        while (right > left && num[left] < point) //确保目前left所在的值比point大，也就是应该在右边
-        {
-            left ++;
-        }
-        if (right > left)
-        {
-            num[right] = num[left];
-        }
-        if (left >= right) //最后left和right重合，也就是point所应该在的位置
-        {
-            num[left] = point;
-        }
-    }
-    quicksort(num, start, left-1);
-    quicksort(num, left+1, end);
-}
-
-//快速排序自己的实现方法
-void quicksort1(int *num, int start, int end)
-{
-    if (start >= end)
-    {
-        return ;
-    }
-    int left = start;
-    int right = end;
-    int point = num[left];
-    while (left < right)
-    {
-        while (left < right && num[right] > point)
-        {
-            right --;
-        }
-        if (left < right)
-        {
-            swap(&num[left], &num[right]);
-            left ++;
-        }
-        while (left < right && num[left] < point)
-        {
-            left ++;
-        }
-        if (left < right)
-        {
-            swap(&num[left], &num[right]);
-            right --;
-        }
-    }
-    quicksort1(num, start, left-1);
-    quicksort1(num, left+1, end);
-}
-
-//快速排序
-void quicksort2(int *num, int start, int end)
-{
-    if (start >= end)
-    {
-        return ;
-    }
-    int temp = num[start];
-    int left = start;
-    int right = end;
-    while (left < right)
-    {
-        while (left < right && num[right] >= temp) //必须添加left<right条件，否则会一直自减
-        {
-            right --;
-        }
-        swap(&num[left], &num[right]);  //此时right的元素小与基准值，需要移到左边
-
-        while (left < right && num[left] <= temp)
-        {
-            left ++;
-        }
-        swap(&num[right], &num[left]);
-    }
-    swap(&num[left], &temp);         //此时left和right重合，就是基准值的最终位置
-    quicksort2(num, start, left-1);
-    quicksort2(num, left+1, end);
-}
-
-//计数排序，需要三个数组，一个原始数组，一个计数数组，一个最终排序数组
+//计数排序，需要三个数组，一个原始数组，一个计数数组，一个最终排序数组，稳定的，时间复杂度为O(n+k)，k=n时，为O(n),空间为O(n+k)
 void countingsort(int *num, int *result, int num_size)
 {
     int *countnum = (int *)malloc(sizeof(int) * (num_size+1));
@@ -847,10 +818,10 @@ void countingsort(int *num, int *result, int num_size)
     {
         countnum[i] += countnum[i-1];
     }
-    for (int i = num_size-1; i >= 0; i --)
+    for (int i = 0; i < num_size; i ++)
     {
-        result[countnum[num[i]] - 1] = num[i];  //计数数组中存储的是小于等于i的数量，需要减1
-        countnum[num[i]] --;  //如果有重复的数，减1
+        result[countnum[num[i]] - 1] = num[i];  //计数数组中存储的是小于等于i的数量，需要减1，循环的是num[i]
+        countnum[num[i]] --;  //如果有重复的数，减1，方便下次循环到该相同元素时将其放在前一个位置
     }
     free(countnum);
 }
@@ -888,17 +859,23 @@ int kth_elem(int *num, int left, int right, int k)
     //以下部分实现快排
     while (left < right)
     {
-        while (num[right] > piovt)
+        while (left < right && num[right] >= piovt) //这里必须加=，因为当num[left] = num[right]时会一直循环
         {
             right --;
         }
-        swap(&num[right], &num[left]);
-
-        while (num[left] < piovt)
+        if (left != right)
+        {
+            num[left] = num[right];
+        }
+        
+        while (left < right && num[left] <= piovt)
         {
             left ++;
         }
-        swap(&num[left], &num[right]);
+        if (left != right)
+        {
+            num[right] = num[left];
+        }
     }
     num[left] = piovt;
     //以下部分实现寻找第k大的元素
@@ -917,33 +894,69 @@ int kth_elem(int *num, int left, int right, int k)
     return num[left];
 }
 
+
+//找到第k大的元素
+int findknum(int *num, int left, int right, int k)
+{
+    int piovt = num[left];
+    int left_temp = left;
+    int right_temp = right;
+    while (left < right)
+    {
+        while (left < right && num[right] > piovt)
+        {
+            right --;
+        }
+        swap(&num[right], &num[left]);
+        while (left < right && num[left] < piovt)
+        {
+            left ++;
+        }
+        swap(&num[right], &num[left]);
+    }
+    num[left] = piovt;
+    if (k == left)
+    {
+        return piovt;
+    }
+    else if (k < left)
+    {
+        return findknum(num, left_temp, left-1, k);
+    }
+    else 
+    {
+        return findknum(num, left+1, right_temp, k);
+    }
+    return piovt;
+}
+
 typedef enum{RED, WHITE, BLUE} color;
 
-//将数组排为1，2，3，1，2，3，1，2，3的形式
+//将数组排为1，1，1，2，2，2，3，3，3的形式
 void Flag_Arrange(int *num, int num_size)
 {
     int i = 0, j = 0, k = num_size-1;
-    while (j <= k)
+    while (j <= k)      //使i以前的颜色都是红色，k以后的颜色都是蓝色，j为工作指针
     {
         switch (num[j])
         {
-        case RED:
-            swap(&num[i], &num[j]);
-            i ++;
-            j ++;
-            break;
-        
-        case WHITE:
-            j ++;
-            break;
+            case RED:
+                swap(&num[i], &num[j]);
+                i ++;
+                j ++;
+                break;
+            
+            case WHITE:
+                j ++;
+                break;
 
-        case BLUE:
-            swap(&num[j], &num[k]);
-            k --;
-            break;   //这里不能添加j++，防止交换之后还是蓝色
-        
-        default:
-            break;
+            case BLUE:
+                swap(&num[j], &num[k]);
+                k --;
+                break;   //这里不能添加j++，防止交换之后还是蓝色
+            
+            default:
+                break;
         }
     }
 }

@@ -2,12 +2,11 @@
 
 ThreadTreeNode* pre = NULL;
 TreeNode* treepre = NULL; //用来保存前一个节点进行比较
+int num[7] = {5, 3, 7, 2, 4, 6, 8};
 
 int main(void)
 {
-    TreeNode* test = CreateTestTree();
-    TreeNode* test2 = CreateTestTree2();
-    printf("%d\n", FindBSTNodeLevel(test, test2));
+    TreeNode* root = CreateBST(root, num, 7);
     //printf("\n");
     return 0;
 }
@@ -18,14 +17,14 @@ int main(void)
 TreeNode* CreateTestTree(void)
 {
     TreeNode* root = CreateRootTree();
-    root->val = 1;
-    AddLeftNode (root, 2, 1, 2);
-    AddRightNode(root, 2, 2, 3);
+    root->val = 5;
+    AddLeftNode (root, 2, 1, 3);
+    AddRightNode(root, 2, 2, 7);
 
-    // AddLeftNode (root, 3, 1, 4);
-    // AddRightNode(root, 3, 2, 5);
-    // AddLeftNode (root, 3, 3, 6);
-    AddRightNode(root, 3, 4, 7);
+    AddLeftNode (root, 3, 1, 2);
+    AddRightNode(root, 3, 2, 4);
+    AddLeftNode (root, 3, 3, 6);
+    AddRightNode(root, 3, 4, 8);
 
     // AddLeftNode (root, 4, 1, 8);
     // AddRightNode(root, 4, 2, 9);
@@ -1002,6 +1001,60 @@ int GetHeight(TreeNode* root)
 int JudgeBalanceTree(TreeNode* root)
 {
     return GetHeight(root) == -1 ? 0 : 1;
+}
+
+//查找二叉排序树中的元素
+TreeNode* SearchBST(TreeNode* root, int k)
+{
+    while (root != NULL && root->val != k)
+    {
+        if (k > root->val)
+        {
+            root = root->rnext;
+        }
+        else
+        {
+            root = root->lnext;
+        }
+    }
+    return root;
+}
+
+//在二叉排序树中插入元素
+TreeNode* InsertBST(TreeNode* root, int k)
+{
+    if (root == NULL)
+    {
+        root = (TreeNode*)malloc(sizeof(TreeNode));
+        root->val = k;
+        root->lnext = NULL;
+        root->rnext = NULL;
+        return root;
+    }
+    else if (k == root->val)
+    {
+        return root;      //二叉排序树中有相同的元素直接退出
+    }
+    else if (k < root->val)
+    {
+        root->lnext = InsertBST(root->lnext, k);
+    }
+    else
+    {
+        root->rnext = InsertBST(root->rnext, k);
+    }
+    return root;
+}
+
+//创建一个排序二叉树
+TreeNode* CreateBST(TreeNode* root, int* num, int n)
+{
+    root = NULL;
+    for (int i = 0; i < n; i ++)
+    {
+        root = InsertBST(root, num[i]);
+    }
+    return root;
 }
 
 //判断一个树是否为二叉排序树(BST),采用中序遍历，递归判断是否是递增

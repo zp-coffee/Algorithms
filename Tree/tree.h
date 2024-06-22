@@ -334,6 +334,15 @@ int GetHeight(TreeNode* root);
 //判断一棵树是否为平衡二叉树
 int JudgeBalanceTree(TreeNode* root);
 
+//查找二叉排序树中的元素
+TreeNode* SearchBST(TreeNode* root, int k);
+
+//在二叉排序树中插入元素
+TreeNode* InsertBST(TreeNode* root, int k);
+
+//创建一个排序二叉树
+TreeNode* CreateBST(TreeNode* root, int* num, int n);
+
 //判断一个树是否为二叉排序树(BST),采用中序遍历，递归判断是否是递增
 int JudgeBST(TreeNode* root);
 

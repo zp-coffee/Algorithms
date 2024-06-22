@@ -70,6 +70,8 @@ int find_mainnum1(int* num, int num_size);
 //找到数组中未出现的最小正整数
 int no_appearnum(int *num, int num_size);
 
+//***************************排序算法*****************************
+
 //冒泡排序
 void bubblesort(int *num, int num_size);
 
@@ -96,9 +98,6 @@ void shellsort(int *num, int num_size);
 
 //快速排序
 void quicksort(int *num, int start, int end);
-
-//快速排序自己的实现方法
-void quicksort2(int *num, int start, int end);
 
 //归并有序序列
 void Merge(int *num, int low, int mid, int high);
@@ -127,8 +126,14 @@ void headadjust(int *num, int k, int num_size);
 //堆排序
 void Heapsort(int *num, int num_size);
 
+//判断是否满足小根堆
+int Judgeminheap(int *num, int num_size);
+
 //计数排序
 void countingsort(int *num, int *result, int num_size);
+
+//计数排序
+void countsort(int *num, int num2[], int num_size);
 
 //找三个数组中的三元组的最小距离
 int find_min_distance(int *num1, int *num2, int *num3, int num_size1, int num_size2, int num_size3);
@@ -144,3 +149,6 @@ int absolute(int x, int y);
 
 //判断a是不是最小的值
 int minimal_data(int a, int b , int c);
+
+//找到第k大的元素
+int findknum(int *num, int left, int right, int k);
