@@ -1,4 +1,4 @@
-TARGET = main
+TARGET = tree
 
 SRC_DIR = .
 SRC_SUBDIR += . 

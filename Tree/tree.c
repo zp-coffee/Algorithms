@@ -1,4 +1,5 @@
 #include "tree.h"
+#include "test.h"
 
 ThreadTreeNode* pre = NULL;
 TreeNode* treepre = NULL; //用来保存前一个节点进行比较
@@ -6,7 +7,13 @@ int num[7] = {5, 3, 7, 2, 4, 6, 8};
 
 int main(void)
 {
-    TreeNode* root = CreateBST(root, num, 7);
+    int returnsize = 0;
+    TreeNode* root = CreateTestTree();
+    inorder_test(root, num, &returnsize);
+    for (int i = 0; i < returnsize; i ++)
+    {
+        printf("%d\n", num[i]);
+    }
     //printf("\n");
     return 0;
 }
