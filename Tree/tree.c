@@ -9,12 +9,13 @@ int main(void)
 {
     int returnsize = 0;
     TreeNode* root = CreateTestTree();
-    inorder_test(root, num, &returnsize);
-    for (int i = 0; i < returnsize; i ++)
-    {
-        printf("%d\n", num[i]);
-    }
-    //printf("\n");
+    root = DeleteNode_test(root, 5);
+    PrintfPreTree(root);
+    // for (int i = 0; i < returnsize; i ++)
+    // {
+    //     printf("%d\n", num[i]);
+    // }
+    // printf("%d\n", returnsize);
     return 0;
 }
 
@@ -273,7 +274,7 @@ void postOrder1(TreeNode* root, int* ret, int* returnSize)
     }
 }
 
-//树的非递归遍历2
+//树的后序非递归遍历2
 void postOrder2(TreeNode* root, int* ret, int* returnSize)
 {
     SqStack* S = CreateSqStack();
@@ -337,7 +338,7 @@ void LevelOrder(TreeNode* root, int* ret, int* returnSize)
     while(!EmptySqQueue(Q))
     {
         size = Q->rear - Q->front;
-        //depth ++;                                 求深度只需要在这里添加一行
+        //depth ++;                                     //求深度只需要在这里添加一行
         for (int i = 0; i < size; i ++)
         {
             cur = PopSqQueue(Q);
@@ -383,7 +384,7 @@ int CheckFullyTree(TreeNode* root)
     return 1;
 }
 
-//一颗二叉树上有多少个度为二的节点
+//一颗二叉树上有多少个度为二的节点,用层序遍历
 int TwoNodeNums(TreeNode* root)
 {
     SqQueue* Q = CreateSqQueue();
@@ -431,10 +432,9 @@ TreeNode* InvertTree(TreeNode* root)
     {
         return NULL;
     }
-    TreeNode* temp = (TreeNode*)malloc(sizeof(TreeNode));
-    temp = root->lnext;
+    TreeNode* temp = root->lnext;
     root->lnext = root->rnext;
-    root->rnext = temp;
+    root->rnext = temp;                   
     InvertTree(root->lnext);
     InvertTree(root->rnext);
     return root;
@@ -452,7 +452,7 @@ TreeNode* InvertTree2(TreeNode* root)
     while(!SqStackEmpty(S))
     {
         TreeNode* cur = PopSqStack(S);
-        TreeNode* temp = (TreeNode*)malloc(sizeof(TreeNode));
+        TreeNode* temp;
         temp = cur->lnext;
         cur->lnext = cur->rnext;
         cur->rnext = temp;
@@ -478,7 +478,7 @@ int FindTreeNode(TreeNode* root, int num)
     return temp;
 }
 
-//删除以root为根的子树
+//删除以root为根的子树,删除后再使root=null
 void DeleteTree(TreeNode* root)
 {
     if (root->rnext) DeleteTree(root->rnext);
@@ -486,28 +486,108 @@ void DeleteTree(TreeNode* root)
     free(root);
 }
 
-//删除指定值的节点,前序遍历，不能只用free，得使该父节点指向null，释放空间得释放该节点的所有子节点的空间，free只释放一个节点的空间
+//删除以指定值为节点的子树并释放空间,前序遍历，不能只用free，得使该父节点指向null，释放空间得释放该节点的所有子节点的空间，free只释放一个节点的空间
+//层序遍历,前序遍历
 TreeNode* DeleteNode(TreeNode* root, int target)
 {
     if (root == NULL || root->val == target)
     {
         DeleteTree(root);
+        root = NULL;          //不加这一句free之后值为0，而不是null
         return root;
     }
-    if (root->lnext->val == target)
+    if (root->lnext)
     {
-        DeleteTree(root->lnext);
-        root->lnext = NULL;
-        return root;
+        if (root->lnext->val == target)
+        {
+            DeleteTree(root->lnext);
+            root->lnext = NULL;
+            return root;
+        }
     }
-    if (root->rnext->val == target)
+    if (root->rnext)
     {
-        DeleteTree(root->rnext);
-        root->rnext = NULL;
+        if (root->rnext->val == target)
+        {
+            DeleteTree(root->rnext);
+            root->rnext = NULL;
+            return root;
+        }
+    }
+    if (root->lnext) root->lnext = DeleteNode(root->lnext, target);
+    if (root->rnext) root->rnext = DeleteNode(root->rnext, target);
+    return root;
+}
+
+//层序遍历非递归
+TreeNode* DeleteNode2(TreeNode* root, int target)
+{
+    if (root == NULL)
+    {
         return root;
     }
-    if (root->lnext) DeleteNode(root->lnext, target);
-    if (root->rnext) DeleteNode(root->rnext, target);
+    TreeNode* cur = root;
+    SqQueue* Q = CreateSqQueue();
+    if (root->val == target)
+    {
+        DeleteTree(root);
+        root = NULL;
+        return root;
+    }
+    PushSqQueue(Q, root);
+    while (!EmptySqQueue(Q))
+    {
+        root = PopSqQueue(Q);
+        if (root->lnext)
+        {
+            if (root->lnext->val == target)
+            {
+                DeleteTree(root->lnext);
+                root->lnext = NULL;
+            }
+            else
+            {
+                PushSqQueue(Q, root->lnext);
+            }
+        }
+        if (root->rnext)
+        {
+            if (root->rnext->val == target)
+            {
+                DeleteTree(root->rnext);
+                root->rnext = NULL;
+            }
+            else
+            {
+                PushSqQueue(Q, root->rnext);
+            }
+        }
+    }
+    return cur;
+}
+
+//仅删除指定值的节点，用右孩子的最左下节点代替,能用于二叉排序树
+TreeNode* DeleteOnlyNode(TreeNode* root, int target)
+{
+    if (root == NULL)
+    {
+        return root;
+    }
+    if (root->val == target)
+    {
+        if (root->rnext == NULL)  //交换以后才会处理这一步
+        {
+            return root->lnext;
+        }
+        TreeNode* cur = root->rnext;
+        while (cur->lnext)   //找到右孩子的最左下节点
+        {
+            cur = cur->lnext;
+        }
+        swap(&(cur->val), &(root->val)); //交换
+    }
+    root->lnext = DeleteOnlyNode(root->lnext, target); //不是当前节点继续往左右子树查找
+    root->rnext = DeleteOnlyNode(root->rnext, target);
     return root;
 }
 
@@ -1994,4 +2074,12 @@ int max(int x, int y)
 int min(int x, int y)
 {
     return x>y ? y : x;
+}
+
+//交换两个值
+void swap(int* x, int* y)
+{
+    int temp = *x;
+    *x = *y;
+    *y = temp;
 }

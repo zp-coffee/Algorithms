@@ -253,8 +253,14 @@ int FindTreeNode(TreeNode* root, int num);
 //删除以root为根的子树
 void DeleteTree(TreeNode* root);
 
-//删除指定值的节点
+//删除指定值为节点的子树，并释放空间
 TreeNode* DeleteNode(TreeNode* root, int target);
+
+//层序遍历非递归
+TreeNode* DeleteNode2(TreeNode* root, int target);
+
+//仅删除指定值的节点，用右孩子的最左下节点代替
+TreeNode* DeleteOnlyNode(TreeNode* root, int target);
 
 //求树的深度
 int MaxDepthTree(TreeNode* root);
@@ -433,5 +439,8 @@ void PushLinkQueue(LinkQueue* Q, variable_type target);
 
 //出队
 variable_type PopLinkQueue(LinkQueue* Q);
+
+//交换两个值
+void swap(int* x, int* y);
 
 #endif
