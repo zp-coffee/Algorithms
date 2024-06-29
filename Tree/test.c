@@ -7,52 +7,32 @@
 // void postorder_test2(TreeNode* root, int* ret, int* returnsize);
 
 //删除值为target的节点
-TreeNode* DeleteNode_test(TreeNode* root, int target)
+// TreeNode* DeleteNode_test(TreeNode* root, int target);
+
+void char_2017(TreeNode* root, int* num, int* returnsize)
 {
-    if (root == NULL || root->val == target)
+    if (root == NULL)
     {
-        DeleteTree(root);
-        root = NULL;
-        return root;
+        return ;
     }
-    SqQueue* Q = CreateSqQueue();
-    TreeNode* cur = root;
-    PushSqQueue(Q, root);
-    while (!EmptySqQueue(Q))
+    if (root->lnext)
     {
-        root = PopSqQueue(Q);
-        if (root->lnext)
-        {
-            if (root->lnext->val == target)
-            {
-                DeleteTree(root->lnext);
-                root->lnext = NULL;
-            }
-            else
-            {
-                PushSqQueue(Q, root->lnext);
-            }
-        }
-        if (root->rnext)
-        {
-            if (root->rnext->val == target)
-            {
-                DeleteTree(root->rnext);
-                root->rnext = NULL;
-            }
-            else
-            {
-                PushSqQueue(Q, root->rnext);
-            }
-        }
+        char_2017(root->lnext, num, returnsize);
     }
-    return cur;
+    else
+    {
+        num[(*returnsize) ++] = 0;
+    }
+
+    num[(*returnsize) ++] = root->val;
+    
+    if (root->rnext)
+    {
+        char_2017(root->rnext, num, returnsize);
+    }
+    else
+    {
+        num[(*returnsize) ++] = 0;
+    }
 }
-
-// //求树的最大深度,后序遍历
-// int MaxDepthTree_test(TreeNode* root);
-
-// //求树的最小深度,指的是从深度最小的叶子节点开始到根节点的路径,使用后序遍历
-// int MinDepthTree_test(TreeNode* root);
-
 

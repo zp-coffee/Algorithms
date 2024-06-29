@@ -328,8 +328,10 @@ void FindMaxNode(TreeNode* root, int* num);
 //17年统考题，计算带权路径长度
 void WPL2014(TreeNode* root, int* sum, int depth);
 
+void WPL2014_2(TreeNode* root, int* sum);
+
 //17年统考题，中序遍历转换为表达式
-void Char2017(TreeNode* root, char* num, int* size);
+void Char2017(TreeNode* root);
 
 //2017年统考题，观察可得到，除了根节点和叶节点外，遍历到其他节点时在左子树上加上左括号，在右子树上加上右括号
 void Char2017Std(TreeNode* root, int depth);

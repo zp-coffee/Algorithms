@@ -9,13 +9,13 @@ int main(void)
 {
     int returnsize = 0;
     TreeNode* root = CreateTestTree();
-    root = DeleteNode_test(root, 5);
-    PrintfPreTree(root);
+    Char2017_3(root);
+    // PrintfPreTree(root);
     // for (int i = 0; i < returnsize; i ++)
     // {
     //     printf("%d\n", num[i]);
     // }
-    // printf("%d\n", returnsize);
+    //printf("%d\n", returnsize);
     return 0;
 }
 
@@ -31,7 +31,7 @@ TreeNode* CreateTestTree(void)
 
     AddLeftNode (root, 3, 1, 2);
     AddRightNode(root, 3, 2, 4);
-    AddLeftNode (root, 3, 3, 6);
+    // AddLeftNode (root, 3, 3, 6);
     AddRightNode(root, 3, 4, 8);
 
     // AddLeftNode (root, 4, 1, 8);
@@ -40,8 +40,8 @@ TreeNode* CreateTestTree(void)
     // AddRightNode(root, 4, 4, 11);
     // AddLeftNode (root, 4, 5, 12);
     // AddRightNode(root, 4, 6, 13);
-    // AddLeftNode (root, 4, 7, 14);
-    // AddRightNode(root, 4, 8, 15);
+    AddLeftNode (root, 4, 7, 14);
+    AddRightNode(root, 4, 8, 15);
     return root;
 }
 
@@ -424,7 +424,6 @@ int TwoNodeNumsRecur(TreeNode* root)
     }
 }
 
-
 //翻转二叉树，递归法，前序遍历
 TreeNode* InvertTree(TreeNode* root)
 {
@@ -591,7 +590,7 @@ TreeNode* DeleteOnlyNode(TreeNode* root, int target)
     return root;
 }
 
-//求树的最大深度,后序遍历
+//求树的最大深度,后序遍历,最大深度是指根节点到最远叶子节点的距离
 int MaxDepthTree(TreeNode* root)
 {
     if (root == NULL)     //递归返回条件，递归到空节点为止
@@ -604,7 +603,7 @@ int MaxDepthTree(TreeNode* root)
     return depth;
 }
 
-//求树的最小深度,指的是从深度最小的叶子节点开始到根节点的路径,使用后序遍历
+//求树的最小深度,指的是从深度最小的叶子节点开始到根节点的路径,使用后序遍历,注意是到最低的叶子节点的距离，叶子节点是左右孩子都为空
 int MinDepthTree(TreeNode* root)
 {
     if (root == NULL) return 0;   //递归结束条件，递归到空节点为止
@@ -622,32 +621,12 @@ int MinDepthTree(TreeNode* root)
     return depth;
 }
 
-// //求出树的所有路径,字符串
-// void construct_paths(TreeNode* root, char** paths, int* returnSize, int* sta, int top) 
-// {
-//     if (root != NULL) {
-//         if (root->lnext == NULL && root->rnext == NULL) {  // 当前节点是叶子节点
-//             char* tmp = (char*)malloc(1001);
-//             int len = 0;
-//             for (int i = 0; i < top; i++) {
-//                 len += sprintf(tmp + len, "%d->", sta[i]);
-//             }
-//             sprintf(tmp + len, "%d", root->val);
-//             paths[(*returnSize)++] = tmp;  // 把路径加入到答案中
-//         } else {
-//             sta[top++] = root->val;  // 当前节点不是叶子节点，继续递归遍历
-//             construct_paths(root->lnext, paths, returnSize, sta, top);
-//             construct_paths(root->rnext, paths, returnSize, sta, top); //递归的同时完成了回溯
-//         }
-//     }
-// }
-
 //找到所有叶子节点的路径主函数
 int** FindAllPaths(TreeNode* root, int* returnSize)
 {
     int** result_path = (int**)malloc(sizeof(int*) * MaxSize);  //存放结果
     *returnSize = 0; //记录路径数
-    int* cur;   //暂存一条路径
+    int* cur;        //暂存一条路径
     construct_paths(root, result_path, returnSize, cur, 0);
     return result_path;
 }
@@ -674,27 +653,10 @@ void construct_paths(TreeNode* root, int** paths, int* returnSize, int* cur, int
     construct_paths(root->rnext, paths, returnSize, cur, top); //左子树的情况遍历完之后遍历右子树的同时，因为top传的不是指针，同时导致了回溯
 }
 
-// //找到值为x的所有祖先
-// void FindAllAncestor(TreeNode* root, int target)
-// {
-//     if (root == NULL)
-//     {
-//         return ;
-//     }
-//     SqStack* S = CreateSqStack();
-//     while(root != NULL || S->top >= 0)
-//     {
-//         while(root != NULL && root->val != target)
-//         {
-//             PushSqStack(S, root);
-//         }
-//     }
-// }
-
 //找最近的公共祖先,必须是同一棵树上的节点，不同树上的节点值相同不能用
 TreeNode* FindLowestCommonAnestor(TreeNode* root, TreeNode* p, TreeNode* q)
 {
-    if (root == q || root == p || root == NULL)   //返回条件：找到了目标节点或者遍历到了根节点
+    if (root == q || root == p || root == NULL)   //返回条件：找到了目标节点或者遍历到了空节点
     {
         return root;
     }
@@ -998,33 +960,73 @@ void WPL2014(TreeNode* root, int* sum, int depth)
     if (root->rnext) WPL2014(root->rnext, sum, depth+1);
 }
 
-//17年统考题，中序遍历转换为表达式
-void Char2017(TreeNode* root, char* num, int* size)
+void WPL2014_2(TreeNode* root, int* sum)
 {
     if (root == NULL)
     {
+        *sum = 0;
         return ;
     }
-    if (root->lnext)
+    SqQueue* Q = CreateSqQueue();
+    PushSqQueue(Q, root);
+    int size;
+    int depth = 0;
+    while (!EmptySqQueue(Q))
     {
-        num[(*size)++] = '(';
-        Char2017(root->lnext, num, size);
+        size = Q->rear - Q->front;
+        depth ++;
+        for (int i = 0; i < size; i ++)
+        {
+            root = PopSqQueue(Q);
+            if (root->lnext == NULL && root->rnext == NULL)
+            {
+                (*sum) += depth * root->val;
+            }
+            else
+            {
+                if (root->lnext) PushSqQueue(Q, root->lnext);
+                if (root->rnext) PushSqQueue(Q, root->rnext);
+            }
+        }
     }
-    if (root->lnext == NULL && root->rnext != NULL)
-    {
-        num[(*size)++] = '(';
-        num[(*size)++] = root->val;
-    }
-    else
-    {
-        num[(*size)++] = root->val;
-    }
-    // num[(*size)++] = root->val;
+}
 
-    if (root->rnext) 
+//2017年二叉树真题，最佳解法
+void Char2017(TreeNode* root)
+{
+    if (root == NULL)
     {
-        Char2017(root->rnext, num, size);
-        num[(*size)++] = ')';
+        return;
+    }
+
+    if (root->lnext)  // 处理左子树
+    {
+        if (root->lnext->lnext == NULL && root->lnext->rnext == NULL) //叶子节点不需要添加括号
+        {
+            Char2017_3(root->lnext);
+        }
+        else 
+        {
+            printf("(");
+            Char2017_3(root->lnext);
+            printf(")");
+        }
+    }
+
+    printf("%d", root->val);  // 处理当前节点的值
+
+    if (root->rnext)  // 处理右子树
+    {
+        if (root->rnext->lnext == NULL && root->rnext->rnext == NULL)
+        {
+            Char2017_3(root->rnext);
+        }
+        else 
+        {
+            printf("(");
+            Char2017_3(root->rnext);
+            printf(")");
+        }
     }
 }
 
@@ -1037,16 +1039,16 @@ void Char2017Std(TreeNode* root, int depth)
     }
     else if (root->lnext == NULL && root->rnext == NULL)
     {
-        printf("%c", root->val);
+        printf("%d", root->val);
     }
-    else
+    else  //如果是叶子节点，不会执行到这里
     {
         if (depth > 1)
         {
             printf("(");
         }
         Char2017Std(root->lnext, depth+1);
-        printf("%c", root->val);
+        printf("%d", root->val);
         Char2017Std(root->rnext, depth+1);
         if (depth > 1) 
         {
