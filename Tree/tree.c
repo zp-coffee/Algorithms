@@ -3,19 +3,19 @@
 
 ThreadTreeNode* pre = NULL;
 TreeNode* treepre = NULL; //用来保存前一个节点进行比较
-int num[7] = {5, 3, 7, 2, 4, 6, 8};
+int num[7] = {1,2,4,5,3,6,7};
+int num1[7];
 
 int main(void)
 {
     int returnsize = 0;
     TreeNode* root = CreateTestTree();
-    Char2017_3(root);
-    // PrintfPreTree(root);
-    // for (int i = 0; i < returnsize; i ++)
-    // {
-    //     printf("%d\n", num[i]);
-    // }
-    //printf("%d\n", returnsize);
+    pretopost(num, num1, 0, 6, &returnsize);
+    for (int i = 0; i < returnsize; i ++)
+    {
+        printf("%d\n", num1[i]);
+    }
+    // printf("%d\n", returnsize);
     return 0;
 }
 
@@ -25,21 +25,21 @@ int main(void)
 TreeNode* CreateTestTree(void)
 {
     TreeNode* root = CreateRootTree();
-    root->val = 5;
-    AddLeftNode (root, 2, 1, 3);
-    AddRightNode(root, 2, 2, 7);
+    root->val = 1;
+    AddLeftNode (root, 2, 1, 2);
+    AddRightNode(root, 2, 2, 3);
 
-    AddLeftNode (root, 3, 1, 2);
-    AddRightNode(root, 3, 2, 4);
-    // AddLeftNode (root, 3, 3, 6);
-    AddRightNode(root, 3, 4, 8);
+    AddLeftNode (root, 3, 1, 4);
+    AddRightNode(root, 3, 2, 5);
+    AddLeftNode (root, 3, 3, 6);
+    AddRightNode(root, 3, 4, 7);
 
-    // AddLeftNode (root, 4, 1, 8);
-    // AddRightNode(root, 4, 2, 9);
-    // AddLeftNode (root, 4, 3, 10);
-    // AddRightNode(root, 4, 4, 11);
-    // AddLeftNode (root, 4, 5, 12);
-    // AddRightNode(root, 4, 6, 13);
+    AddLeftNode (root, 4, 1, 8);
+    AddRightNode(root, 4, 2, 9);
+    AddLeftNode (root, 4, 3, 10);
+    AddRightNode(root, 4, 4, 11);
+    AddLeftNode (root, 4, 5, 12);
+    AddRightNode(root, 4, 6, 13);
     AddLeftNode (root, 4, 7, 14);
     AddRightNode(root, 4, 8, 15);
     return root;
@@ -677,7 +677,6 @@ TreeNode* FindLowestCommonAnestor(TreeNode* root, TreeNode* p, TreeNode* q)
     return NULL;            //左子树和右子树都没有
 }
 
-
 //求二叉树的最大宽度,采用层序遍历
 int MaxWidth(TreeNode* root)
 {
@@ -721,6 +720,7 @@ void PreToPost(int* pre, int* post, int start, int end, int* num)
     post[*num] = root;  //加上根
     (*num) ++;
 }
+
 
 //在链表尾部加入一个节点
 void ListAddTail(List* L, List* new)
@@ -1003,12 +1003,12 @@ void Char2017(TreeNode* root)
     {
         if (root->lnext->lnext == NULL && root->lnext->rnext == NULL) //叶子节点不需要添加括号
         {
-            Char2017_3(root->lnext);
+            Char2017(root->lnext);
         }
         else 
         {
             printf("(");
-            Char2017_3(root->lnext);
+            Char2017(root->lnext);
             printf(")");
         }
     }
@@ -1019,12 +1019,12 @@ void Char2017(TreeNode* root)
     {
         if (root->rnext->lnext == NULL && root->rnext->rnext == NULL)
         {
-            Char2017_3(root->rnext);
+            Char2017(root->rnext);
         }
         else 
         {
             printf("(");
-            Char2017_3(root->rnext);
+            Char2017(root->rnext);
             printf(")");
         }
     }
@@ -1214,7 +1214,7 @@ int SqStackEmpty(SqStack* S)
 {
     if (S->top == -1)
     {
-        printf("the stack is empty\n");
+        // printf("the stack is empty\n");
         return 1;
     }
     return 0;
@@ -1225,7 +1225,7 @@ void PushSqStack(SqStack* S, variable_type x)
 {
     if (S->top == MaxSize)
     {
-        printf("the stack is full\n");
+        // printf("the stack is full\n");
         return ;
     }
     S->data[++S->top] = x;
@@ -1236,7 +1236,7 @@ variable_type PopSqStack(SqStack* S)
 {
     if (S->top == -1)
     {
-        printf("the stack is empty");
+        // printf("the stack is empty");
         return 0;
     }
     variable_type x = S->data[S->top];
@@ -1249,7 +1249,7 @@ variable_type ReadSqStack(SqStack* S)
 {
     if (S->top == -1)
     {
-        printf("the stack is empty\n");
+        // printf("the stack is empty\n");
         return 0;
     }
     return S->data[S->top];
@@ -1271,7 +1271,7 @@ int LinkStackEmpty(LinkStack* l)
 {
     if (l->next == NULL)
     {
-        printf("the linkstack is empty\n");
+        // printf("the linkstack is empty\n");
         return 0;
     }
     return 1;
@@ -1319,7 +1319,7 @@ int EmptySqQueue(SqQueue* Q)
 {
     if (Q->front == Q->rear)
     {
-        printf("the queue is empty\n");
+        // printf("the queue is empty\n");
         return 1;
     }
     else
@@ -1331,7 +1331,7 @@ void PushSqQueue(SqQueue* Q, variable_type val)
 {
     if ((Q->rear+1) % MaxSize == Q->front)  //队列满了，采取牺牲一个存储单元来实现判断队列满
     {
-        printf("the queue is full\n");
+        // printf("the queue is full\n");
         return;
     }
     Q->data[Q->rear] = val;
@@ -1343,7 +1343,7 @@ variable_type PopSqQueue(SqQueue* Q)
 {
     if (Q->rear == Q->front)
     {
-        printf("the queue is empty\n");
+        // printf("the queue is empty\n");
         return NULL;
     }
     variable_type temp = Q->data[Q->front];
