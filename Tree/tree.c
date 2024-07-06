@@ -1,5 +1,4 @@
 #include "tree.h"
-#include "test.h"
 
 ThreadTreeNode* pre = NULL;
 TreeNode* treepre = NULL; //用来保存前一个节点进行比较

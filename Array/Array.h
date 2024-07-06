@@ -1,6 +1,8 @@
 #include "stdio.h"
 #include "stdlib.h"
 
+extern int last_numsize;
+
 //找到给定值并返回坐标，如果没有则返回-1
 int search_a_num(int *num, int num_size, int target);
 
@@ -25,6 +27,9 @@ void swap(int *i, int *j);
 //逆置数组
 void swap_array(int *num, int num_size);
 
+//逆置数组，从a到b
+void swap_array_from_a_to_b(int* num, int a, int b);
+
 //删除数组中处于a到b到元素
 int delete_num_for_a_to_b(int *num, int a, int b, int num_size);
 
@@ -36,6 +41,9 @@ int* sort_twoarray(int *num1, int *num2, int num_size1, int num_size2);
 
 //将数组内的两个线性表交换次序
 int* swap_array_inside(int *num, int m, int n, int num_size);
+
+//不使用额外空间
+void swap_array_inside_nospace(int* num, int m, int n, int num_size);
 
 //从三个相同长度的递增数组中找出相同的元素并返回
 int find_same_num(int *num1, int *num2, int *num3, int num_size);
@@ -152,3 +160,5 @@ int minimal_data(int a, int b , int c);
 
 //找到第k大的元素
 int findknum(int *num, int left, int right, int k);
+
+void insert_test2(int* num, int num_size);

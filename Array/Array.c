@@ -1,20 +1,20 @@
-#include"Array.h"
+#include "Array.h"
+#include "test.h"
 
 int nums[3] = {-1,0,9};
-int nums1[10] = {-25,-10,10,11};
-int nums2[14] = {1,2,1,2,0,2,1,2,2,1,0,0,0,0};
+int nums1[10] = {0,1,2,4,4,5,6,7,8,9};
+int nums2[3] = {2,4,6}; 
 int nums3[10] = {0,0,4,2,8,5,3,1,3,6};
 int last_numsize = 10;
 
 int main(void)
 {
-    //countingsort(nums3, nums1, 10);
-    //printf_array(nums1, 10);
-    printf("numk:%d\n", kth_elem(nums3, 1, 9, 5));
+    quicksort(nums3, 0, 10);
+    printf_array(nums3, 10);
     return 0;
 }
 
-//找到给定值并返回坐标，如果没有则返回-1
+//找到给定值并返回坐标，如果没有则返回-1, 二分法,只能用于有序数组
 int search_a_num(int *num, int num_size, int target)
 {
     int left = 0;
@@ -40,6 +40,7 @@ int search_a_num(int *num, int num_size, int target)
 }
 
 //给你一个数组 nums 和一个值 val，你需要原地移除所有数值等于 val 的元素，并返回移除后数组的新长度
+//双指针法
 int delete_nums(int *num, int num_size, int target)
 {
     int slow = 0;
@@ -56,17 +57,7 @@ int delete_nums(int *num, int num_size, int target)
     return slow;
 }
 
-//打印数组
-void printf_array(int* num, int num_size)
-{
-    printf("printf_array:\n");
-    for (int i = 0; i < num_size; i ++)
-    {
-        printf("%d\n", num[i]);
-    }
-}
-
-//有序数组的平方排序
+//有序数组的平方排序,双指针法
 int *sort_nums_square(int *num, int num_size)
 {
     int *return_array = (int *)malloc(sizeof(int) * num_size);
@@ -93,7 +84,7 @@ int *sort_nums_square(int *num, int num_size)
     return return_array;
 }
 
-//找到数组中满足和<=s的最小长度并返回,数组中元素为正数
+//找到数组中满足>=s的最小长度并返回,数组中元素为正数，滑动窗口，时间复杂度为O(n)，里面的while只执行有限次
 int find_minlen(int *num, int s, int num_size)
 {
     int return_num = INT32_MAX;
@@ -110,7 +101,7 @@ int find_minlen(int *num, int s, int num_size)
             sum -= num[i++];
         }
     }
-    return_num = return_num == INT32_MAX ? 0 : return_num;
+    return_num = return_num == INT32_MAX ? 0 : return_num;  //最后检查是不是找不到和比target大的序列
     return return_num;
 }
 
@@ -151,9 +142,21 @@ void swap_array(int *num, int num_size)
 {
     int i = 0;
     int j = num_size - 1;
-    for (i = 0; i <= num_size/2; i ++,j--)
+    for (i = 0; i <= j; i ++,j--)
     {
         swap(&num[i],&num[j]);
+    }
+}
+
+//逆置数组，从a开始长度为b的序列
+void swap_array_from_a_to_b(int* num, int a, int b)
+{
+    int mid = (a+b)/2;
+    for (int i = 0; i <= mid-a; i ++)
+    {
+        int temp = num[a+i];
+        num[a+i] = num[b-i];
+        num[b-i] = temp;
     }
 }
 
@@ -240,7 +243,7 @@ int* sort_twoarray(int *num1, int *num2, int num_size1, int num_size2)
     return return_num;
 }
 
-//将数组内的两个线性表交换次序
+//将数组内的两个线性表交换次序,a1,a2,...,an,b1,b2,...,bm，换为b1,b2,....bm,a1,a2....an
 int* swap_array_inside(int *num, int m, int n, int num_size)
 {
     int *return_num = (int *)malloc(sizeof(int) * num_size);
@@ -254,6 +257,31 @@ int* swap_array_inside(int *num, int m, int n, int num_size)
         return_num[n+i] = num[i];
     }
     return return_num;
+}
+
+//不使用额外空间
+void swap_array_inside_nospace(int* num, int m, int n, int num_size)
+{
+    swap_array(num, num_size);
+    swap_array_from_a_to_b(num, 0, n-1);
+    swap_array_from_a_to_b(num, n, n+m-1);
+}
+
+//begin和end都代表数组下标
+void array_reverse(int *num, int begin, int end)
+{
+    for (int i = 0; i < (end-begin+1)/2; i ++)
+    {
+        swap(&num[begin+i], &num[end-i]);
+    }
+}
+
+//实现数组内两个线性表的逆置
+void swap_array_inside1(int *num, int p, int num_size)
+{
+    array_reverse(num, 0, num_size-1);
+    array_reverse(num, 0, p-1);
+    array_reverse(num, p, num_size-1);
 }
 
 //在一个递增数组中寻找一个值，如果找到将其与后续元素交换，否则插入
@@ -275,7 +303,7 @@ int* find_a_num(int *num, int target, int num_size)
         }
         else
         {
-            if(middle == num_size - 1)
+            if(middle == num_size - 1) //找到的元素是最后一个元素，不存在交换
             {
                 return num;
             }
@@ -283,21 +311,21 @@ int* find_a_num(int *num, int target, int num_size)
             return num;
         }
     }
-    int *return_num = insert_a_num(num, target, left+1, num_size);
+    int *return_num = insert_a_num(num, target, left+1, num_size); //执行到这里说明查找失败，将元素插入
     return return_num;
 }
 
-//在一个数组的第几个位置插入一个元素
+//在一个数组的a[n]插入一个元素
 int* insert_a_num(int *num, int target, int n, int num_size)
 {
     int *return_num = (int *)malloc(sizeof(int) * (num_size + 1));
     int i  = 0;
-    for (i = 0; i < n-1; i ++)
+    for (i = 0; i < n; i ++)
     {
         return_num[i] = num[i];
     }
-    return_num[n-1] = target;
-    for(i = n; i <= num_size; i ++)
+    return_num[n] = target;
+    for(i = n+1; i < num_size+1; i ++)
     {
         return_num[i]  = num[i-1];
     }
@@ -347,39 +375,7 @@ void find_same_num1(int *num1, int *num2, int *num3, int num_size)
     }
 }
 
-//找最大值
-int find_max(int a, int b, int c)
-{
-    int temp = a;
-    if (a < b)
-    {
-        temp = b;
-    }
-    if (temp < c)
-    {
-        temp = c;
-    }
-    return temp;
-}
-
-//begin和end都代表数组下标
-void array_reverse(int *num, int begin, int end)
-{
-    for (int i = 0; i < (end-begin+1)/2; i ++)
-    {
-        swap(&num[begin+i], &num[end-i]);
-    }
-}
-
-//实现数组内两个线性表的逆置
-void swap_array_inside1(int *num, int p, int num_size)
-{
-    array_reverse(num, 0, num_size-1);
-    array_reverse(num, 0, p-1);
-    array_reverse(num, p, num_size-1);
-}
-
-//找中位数,时间复杂度和空间复杂度都为n
+//找两个有序序列的中位数,时间复杂度和空间复杂度都为n
 int find_middle_num(int *num1, int *num2, int num_size)
 {
     int *new_num = sort_twoarray(num1, num2, num_size, num_size);
@@ -411,7 +407,7 @@ int find_mainnum(int *num, int num_size)
 //找主元素，时间为n，空间为1，思想为先找出可能为主元素的数，最后再进行统计
 int find_mainnum1(int* num, int num_size)
 {
-    int maynum = num[0];
+    int maynum = num[0];   //先假设0号为主元素
     int count = 0;
     for (int i = 1; i < num_size; i ++)
     {
@@ -502,7 +498,7 @@ void insertsort2(int *num, int num_size)
     int i, j;
     for (i = 1; i < num_size; i ++)
     {
-        if (num[i] < num[i-1])   //先比较再循环，在最好情况下能达到O(n)
+        if (num[i-1] > num[i])   //先比较再循环，在最好情况下能达到O(n)
         {
             temp = num[i];
             for (j = i-1; num[j] > temp && j >= 0; j --)
@@ -530,7 +526,7 @@ void insertsort3(int *num, int num_size)
             {
                 low = mid + 1;
             }
-            else if (temp <= num[mid])  //在左边
+            else if (temp <= num[mid])  //在左边,要加等于号
             {
                 high = mid - 1;
             }
@@ -586,7 +582,6 @@ void bubblesort(int *num, int num_size)
 //冒泡排序，简化，比较的次数少了将近一半，将最小的元素冒泡到最终位置，稳定算法
 void bubblesort2(int *num, int num_size)
 {
-    int count = 0;
     for (int i = 0; i < num_size; i ++)   //表示趟数
     {
         int flag = 0;                     //判断后序的序列是否已经有序，及时终止，此时与初始状态有关
@@ -597,14 +592,12 @@ void bubblesort2(int *num, int num_size)
                 swap(&num[j], &num[j-1]);   //以不断交换相邻元素来使每次最大的元素或最小的元素到达最终位置
                 flag = 1;
             }
-            count ++;
         }
         if (flag == 0)  //经过一轮的比较没有需要进行交换的元素，说明已经有序，不需要再进行循环
         {
             break;
         }
     }
-    printf("%d\n", count);
 }
 
 //冒泡排序，将最大的元素冒泡到最终位置
@@ -639,7 +632,7 @@ void quicksort(int *num, int start, int end) //后续再递归地对前面排好
         return ;
     }
     int left = start;
-    int right = end;
+    int right = end-1;
     int point = num[left];   //一开始从左边取一个元素，所以从右边开始比较
     while (left < right)     //最左边的值初始为point，所以从右边开始比较
     {
@@ -659,10 +652,7 @@ void quicksort(int *num, int start, int end) //后续再递归地对前面排好
         {
             num[right] = num[left];
         }
-        if (left >= right) //最后left和right重合，也就是point所应该在的位置
-        {
-            num[left] = point;
-        }
+        num[left] = point;
     }
     quicksort(num, start, left-1);
     quicksort(num, left+1, end);
@@ -1070,4 +1060,29 @@ int minimal_data(int a, int b , int c)
         return 1;
     }
     return 0;
+}
+
+//打印数组
+void printf_array(int* num, int num_size)
+{
+    printf("printf_array:\n");
+    for (int i = 0; i < num_size; i ++)
+    {
+        printf("%d\n", num[i]);
+    }
+}
+
+//找最大值
+int find_max(int a, int b, int c)
+{
+    int temp = a;
+    if (a < b)
+    {
+        temp = b;
+    }
+    if (temp < c)
+    {
+        temp = c;
+    }
+    return temp;
 }
