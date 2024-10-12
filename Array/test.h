@@ -24,3 +24,11 @@ void insert_test(int* num, int num_size);
 void bubble_test(int* num, int num_size);
 
 void quick_test(int* num, int start, int end);
+
+void select_test(int* num, int num_size);
+
+void changeheap_test(int* num, int k, int num_size);
+
+void buildheap_test(int* num, int num_size);
+
+void heapsort_test(int* num, int num_size);

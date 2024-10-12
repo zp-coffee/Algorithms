@@ -300,3 +300,157 @@ void quick_test(int* num, int start, int end)
     quick_test(num, start, left);
     quick_test(num, left+1, end);
 }
+
+void select_test(int* num, int num_size)
+{
+    int min = -9;
+    int temp = 0;
+    for (int i = 0; i < num_size; i ++)
+    {
+        min = num[i];
+        temp = i;
+        for (int j = i; j < num_size; j ++)
+        {
+            if (num[j] < min)
+            {
+                min = num[j];
+                temp = j;
+            }
+        }
+        swap(&num[i], &num[temp]);
+    }
+}
+
+void heapsort_test(int* num, int num_size)
+{
+    buildheap_test(num, num_size);
+    for (int i = num_size; i > 1; i --)
+    {
+        swap(&num[1], &num[i]);
+        changeheap_test(num, 1, i-1);
+    }
+}
+
+
+void buildheap_test(int* num, int num_size)
+{
+    for (int i = num_size/2; i >= 1;i --)
+    {
+        changeheap_test(num, i, num_size);
+    }
+}
+
+
+void changeheap_test(int* num, int k, int num_size)  //调整堆
+{
+    num[0] = num[k];  //保存根节点
+    for (int i = 2*k; i <= num_size; i *= 2) //只要还在树的范围内就一直调整，这里i*=2，而不是i++
+    {
+        if (i < num_size && num[i] < num[i+1]) //右孩子更大
+        {
+            i ++;
+        }
+        if (num[i] < num[0])  //孩子小于根节点,这里是num[0]而不是num[k]，需要一直与最初的根节点进行比较
+        {
+            break;
+        }
+        else
+        {
+            num[k] = num[i];  //孩子大于根节点，覆盖根节点
+            k = i;            //继续向下比较直到超出树的范围
+        }
+    }
+    num[k] = num[0];
+}
+
+
+int judgesmallheap(int* num, int num_size)
+{
+    if (num_size % 2)
+    {
+        if (num[num_size/2] > num[num_size])
+        {
+            return 0;
+        }
+        for (int i = num_size/2 - 1; i >= 1; i --)
+        {
+            if (num[i] > num[2*i] || num[i] > num[2*i+1])
+            {
+                return 0;
+            }
+        }
+    }
+    else 
+    {
+        for (int i = num_size/2; i >= 1; i --)
+        {
+            if (num[i] > num[2*i] || num[i] > num[2*i+1])
+            {
+                return 0;
+            }
+        }
+    }
+}
+
+int* merge_sort(int* num, int low, int mid, int high)
+{
+    int i, j, k;
+    int* num_test = (int*)malloc(sizeof(int) * (high-low));
+    for (int i = 0; i < high; i ++)
+    {
+        num_test[i] = 0;
+    }
+    for (i = low, k = low, j = mid+1; i <= mid && j < high; k ++)
+    {
+        if (num[i] < num[j])
+        {
+            num_test[k] = num[i++];
+        }
+        else
+        {
+            num_test[k] = num[j++];
+        }
+    }
+    while (i <= mid)
+    {
+        num_test[k++] = num[i++];
+    }
+    while (j < high)
+    {
+        num_test[k++] = num[j++];
+    }
+}
+
+void merge_test(int* num, int low, int high)
+{
+    if (low < high)
+    {
+        int mid = (low+high)/2;
+        merge_test(num, low, mid);
+        merge_test(num, mid+1, high);
+        merge_sort(num, low, mid, high);
+    }
+}
+
+
+void countsort_test(int* num, int* result, int num_size)
+{
+    int* countnum = (int*)malloc(sizeof(int) * (num_size+1));
+    for (int i = 0; i <= num_size; i ++)
+    {
+        countnum[i] = 0;
+    }
+    for (int i = 0; i < num_size; i ++)
+    {
+        countnum[num[i]] ++;
+    }
+    for (int i = 1; i <= num_size; i ++)
+    {
+        countnum[i] += countnum[i-1];
+    }
+    for (int i = num_size-1; i >= 0; i --)
+    {
+        result[countnum[num[i]]-1] = num[i];
+        countnum[num[i]] --;
+    }
+}

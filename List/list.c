@@ -5,13 +5,6 @@
 int main(void)
 {
     ListNode* mylist1 = list1();
-    //ListNode* mylist2 = list2();
-    printf("%d\n", FindMaxSum1(mylist1));
-    //JudgeSonList(mylist1, mylist2);
-    // ListNode* temp = SplitList1(mylist1);
-    // printf_headlist(mylist1);
-    // printf("\n");
-    // printf_headlist(temp);
     return 0;
 }
 

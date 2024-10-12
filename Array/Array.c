@@ -4,13 +4,13 @@
 int nums[3] = {-1,0,9};
 int nums1[10] = {0,1,2,4,4,5,6,7,8,9};
 int nums2[3] = {2,4,6}; 
-int nums3[10] = {0,0,4,2,8,5,3,1,3,6};
+int nums3[11] = {0,0,4,2,8,5,3,1,3,6,9};
 int last_numsize = 10;
 
 int main(void)
 {
-    quicksort(nums3, 0, 10);
-    printf_array(nums3, 10);
+    heapsort_test(nums3, 10);
+    printf_array(nums3, 11);
     return 0;
 }
 
@@ -57,11 +57,11 @@ int delete_nums(int *num, int num_size, int target)
     return slow;
 }
 
-//有序数组的平方排序,双指针法
+//有序数组的平方排序,双指针法，最大值肯定是两端的平方
 int *sort_nums_square(int *num, int num_size)
 {
-    int *return_array = (int *)malloc(sizeof(int) * num_size);
-    int right = num_size - 1;
+    int *return_array = (int *)malloc(sizeof(int) * num_size); //创建一个辅助数组存放结果
+    int right = num_size - 1;                                  //两个指针从两端往中间
     int left = 0;
     int index = 0;
     int left_num = 0;
@@ -262,9 +262,9 @@ int* swap_array_inside(int *num, int m, int n, int num_size)
 //不使用额外空间
 void swap_array_inside_nospace(int* num, int m, int n, int num_size)
 {
-    swap_array(num, num_size);
-    swap_array_from_a_to_b(num, 0, n-1);
-    swap_array_from_a_to_b(num, n, n+m-1);
+    swap_array(num, num_size);               //逆置整个数组
+    swap_array_from_a_to_b(num, 0, n-1);     //逆置前面的元素
+    swap_array_from_a_to_b(num, n, n+m-1);   //逆置后面的元素
 }
 
 //begin和end都代表数组下标
@@ -307,7 +307,7 @@ int* find_a_num(int *num, int target, int num_size)
             {
                 return num;
             }
-            swap(&num[middle],&num[middle+1]);
+            swap(&num[middle],&num[middle+1]);  //找到了，进行交换
             return num;
         }
     }
@@ -531,11 +531,11 @@ void insertsort3(int *num, int num_size)
                 high = mid - 1;
             }
         }
-        for (j = i - 1; j >= high + 1; j --) //把需要插入的位置high+1到i-1的元素统一后移
+        for (j = i-1; j >= high+1; j --) //把需要插入的位置high+1到i-1的元素统一后移
         {
             num[j+1] = num[j];  //最坏情况下，1+2+3+...+n-1 = n(n-1)/2，时间复杂度为n2
         }
-        num[high+1]  = temp;  //插入
+        num[high+1] = temp;  //插入
     }
 }
 
@@ -603,7 +603,6 @@ void bubblesort2(int *num, int num_size)
 //冒泡排序，将最大的元素冒泡到最终位置
 void bubblesort3(int *num, int num_size)
 {
-    int count = 0;
     for (int i = num_size - 1; i >= 0; i --)
     {
         int flag = 0;
@@ -614,14 +613,12 @@ void bubblesort3(int *num, int num_size)
                 swap(&num[j], &num[j+1]);
                 flag = 1;
             }
-            count ++;
         }
         if (flag == 0)
         {
             break;
         }
     }
-    printf("%d\n", count);
 }
 
 //快速排序，每次选择一个元素作为基准，使大于该基准的元素排在右边，小于该基准的元素排在左边，当left=right时，把基准的值赋给重合点
@@ -683,28 +680,28 @@ void buildmaxheap(int *num, int num_size)  //这里的num_size指的是数组的
 {
     for (int i = num_size/2; i >=1; i --)  //将堆视为一个二叉树，num_size/2的位置为树中最后一个根节点
     {  
-        headadjust(num, i, num_size);
+        headadjust(num, i, num_size); //从最后一个分支节点开始直到根节点
     }
 }
 
-//调整大根堆
+//调整大根堆，最大的元素在上面
 void headadjust(int *num, int k, int num_size)  //k为根节点的编号
 {
-    num[0] = num[k];  //暂存这个值
-    for (int i = 2*k; i <= num_size; i *= 2)
+    num[0] = num[k];  //保存根节点
+    for (int i = 2*k; i <= num_size; i *= 2) //只要还在树的范围内就一直调整，这里i*=2，而不是i++
     {
-        if (i < num_size && num[i] < num[i+1])  //找到左右孩子中更大的那个孩子，i<num_size是为了保证有右孩子
+        if (i < num_size && num[i] < num[i+1]) //如果右孩子更大，则比较右孩子和根，这里i<num_size是为了保证有右孩子
         {
             i ++;
         }
-        if (num[0] > num[i])
+        if (num[i] < num[0])  //孩子小于根节点,这里是num[0]而不是num[k]，需要一直与最初的根节点进行比较
         {
             break;
         }
         else
         {
-            num[k] = num[i];
-            k = i;            //交换位置之后可能会破坏下面的次序，将k赋值为i再进行判断，此时的i为调整的子树
+            num[k] = num[i];  //孩子大于根节点，覆盖根节点
+            k = i;            //继续向下比较直到超出树的范围
         }
     }
     num[k] = num[0];
@@ -717,7 +714,7 @@ void Heapsort(int *num, int num_size)
     for (int i = num_size; i > 1; i --)
     {
         swap(&num[1], &num[i]);   //把根节点(最大的元素)依次放到最后的节点中，之后大根堆次序打乱，重新排序
-        headadjust(num, 1, i-1);  //每一次输出之后需要调整的长度就变短
+        headadjust(num, 1, i-1);  //每一次输出之后需要调整的长度就变短，并且调整整颗树
     }
 }
 
@@ -796,7 +793,7 @@ void MergeSort(int *num, int low, int high)
 void countingsort(int *num, int *result, int num_size)
 {
     int *countnum = (int *)malloc(sizeof(int) * (num_size+1));
-    for (int i = 0; i < num_size; i ++)   //初始化计数数组
+    for (int i = 0; i <= num_size; i ++)   //初始化计数数组
     {
         countnum[i] = 0;
     }
@@ -804,7 +801,7 @@ void countingsort(int *num, int *result, int num_size)
     {
         countnum[num[i]] ++;
     }
-    for (int i = 1; i < num_size; i ++)   //对计数数组进行统计
+    for (int i = 1; i <= num_size; i ++)   //对计数数组进行统计
     {
         countnum[i] += countnum[i-1];
     }
