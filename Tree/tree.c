@@ -9,11 +9,11 @@ int main(void)
 {
     int returnsize = 0;
     TreeNode* root = CreateTestTree();
-    pretopost(num, num1, 0, 6, &returnsize);
-    for (int i = 0; i < returnsize; i ++)
-    {
-        printf("%d\n", num1[i]);
-    }
+    // PreToPost(num, num1, 0, 6, &returnsize);
+    // for (int i = 0; i < returnsize; i ++)
+    // {
+    //     printf("%d\n", num1[i]);
+    // }
     // printf("%d\n", returnsize);
     return 0;
 }

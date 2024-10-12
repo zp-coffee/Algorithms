@@ -16,6 +16,14 @@ typedef struct linkstack
     struct linkstack* next;
 }LinkStack;  //栈的链式存储
 
+typedef struct doublestack
+{
+    variable_type val;
+    struct doublestack* next;
+    struct doublestack* pre;
+}DoubleStack;  //栈的双向链表实现
+
+
 //********顺序栈的基本操作******************
 
 //初始化栈
@@ -52,3 +60,17 @@ variable_type ReadLinkStack(LinkStack* l);
 
 //判断栈是否为空
 int LinkStackEmpty(LinkStack* l);
+
+//********双向链表栈的基本操作**************
+
+//创建一个节点
+DoubleStack* CreateDoubleStack(variable_type num);
+
+//判断是否为空
+int DoubleStackEmpty(DoubleStack* l);
+
+//入栈，有头节点，尾插法
+void PushDoubleStack(DoubleStack* l, variable_type num);
+
+//出栈，有头节点
+variable_type PopDoubleStack(DoubleStack* l);
